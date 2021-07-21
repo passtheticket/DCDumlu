@@ -1,4 +1,4 @@
-# DCDumlupinar D-6
+# DCDumlupinar
 DCDumlupınar aims to conduct enumeration and persistence on the Active Directory.
 
 ![GitHub Logo](images/TCGDumlu.jpg)
@@ -41,3 +41,6 @@ resetObject | Change userAccountControl attribute of object to reset modificatio
 uacTable | Show values fo userAccountControl attribute if you need for resetObject operation
 help | Print usage
 exit | Exit
+
+## Details
+[unsafe-inline](https://docs.unsafe-inline.com/inline/dcdumlupinar)
