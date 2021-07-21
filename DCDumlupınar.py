@@ -676,8 +676,7 @@ while True:
             sys.exit(1)
         count += 1
         while (count > 0):
-            #operation = input(Style.BRIGHT + username+'@'+domainName+':~$ ' + Style.RESET_ALL)
-            operation = input(username + '@' + domainName + ':~$ ')
+            operation = input(Style.BRIGHT + username+'@'+domainName+':~$ ' + Style.RESET_ALL)
             dumlupinar = dcDumlu(server, domainName, username, password, operation, searchBaseName)
             dumlupinar.main()
 
