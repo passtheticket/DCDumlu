@@ -1,1 +1,1 @@
-# DCDumlupinar D-6
+# DCDumlupinar
