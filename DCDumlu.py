@@ -29,6 +29,7 @@ class dcDumlu():
         # define the server and the connection
         s = Server(self.server, get_info=ALL)
         c = Connection(s, user=self.domainName+"\\"+self.username, password=self.password, authentication=NTLM)
+        # Hash format | LM:NT hash or NT:NT hash
         # perform the Bind operation
         if not c.bind():
             if c.result["description"] == "invalidCredentials":
