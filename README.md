@@ -31,8 +31,8 @@ unconstrainedUser | Enumerate unconstrained user account
 addUser | Add a user
 addUserToGroup | Add a user to group
 delUser | Delete a user
-setSpn | Set a servicePrincipalName attribute
-unSetSpn | Unset a servicePrincipalName attribute
+setSpn | Set a servicePrincipalName attribute value
+unSetSpn | Unset a servicePrincipalName attribute value
 addUnconstrained | Modify an object for delegation to any service with Kerberos Auth
 addConstrained | Modify an object for delegation to specific service
 addAsRepRoasting | Set user option as do not require Kerberos preauthentication for As-Rep Roasting attack
