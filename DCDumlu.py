@@ -29,7 +29,6 @@ class dcDumlu():
         # define the server and the connection
         s = Server(self.server, get_info=ALL)
         c = Connection(s, user=self.domainName+"\\"+self.username, password=self.password, authentication=NTLM)
-        # c = Connection(s, user="AUTHTEST\\Administrator", password="1D9AD8FA0B11025EAC55A0999F8732D8:CC01805057F9B4624FEA6A6B7CE5C545", authentication=NTLM)
         # perform the Bind operation
         if not c.bind():
             if c.result["description"] == "invalidCredentials":
@@ -40,7 +39,6 @@ class dcDumlu():
         else:
             print('[+] Connection established...')
 
-        #if else yapısını burada kur istenilen operasyona göre fonksiyonu çağır.
         if self.operation == "getHosts":
             self.enumHosts(c)
 
@@ -149,11 +147,9 @@ class dcDumlu():
             print('[!] Use exit or help to list commands!')
 
 
-
-
     def enumHosts(self, c):
-                #enum all hosts
-                #domain controller: search_filter='(&(objectCategory=Computer)(userAccountControl:1.2.840.113556.1.4.803:=8192))'
+        #enum all hosts
+        #domain controller: search_filter='(&(objectCategory=Computer)(userAccountControl:1.2.840.113556.1.4.803:=8192))'
         total_entries = 0
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
                                                search_filter='(objectCategory=Computer)',
@@ -167,7 +163,6 @@ class dcDumlu():
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
-                #Computer name: entry['attributes']['cn'] | Operating system: entry['attributes']['operatingSystem'] | Logon count: entry['attributes']['logonCount'] | Last logon time: entry['attributes']['lastLogon']
                 table.add_row([ entry['attributes']['cn'], entry['attributes']['operatingSystem'], entry['attributes']['logonCount'], entry['attributes']['lastLogon']])
                 total_entries += 1
         if total_entries > 0:
@@ -177,7 +172,7 @@ class dcDumlu():
             print('[-] Not found!')
 
     def enumUsers(self, c):
-                #enum all users
+        #enum all users
         total_entries = 0
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
                                                search_filter='(&(objectCategory=person)(objectClass=user))',
@@ -189,7 +184,6 @@ class dcDumlu():
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
-                #print("[+] Username: " + entry['attributes']['cn'] + " || samAccountName: " + entry['attributes']['sAMAccountName'] + " || Logon count: " + str(entry['attributes']['logonCount']) + " || Admin Count: " + str(entry['attributes']['adminCount']))
                 table.add_row([ entry['attributes']['cn'], entry['attributes']['sAMAccountName'], entry['attributes']['userAccountControl'], entry['attributes']['logonCount'], entry['attributes']['adminCount']])
                 total_entries += 1
         if total_entries > 0:
@@ -199,7 +193,7 @@ class dcDumlu():
             print('[-] Not found!')
 
     def enumGroups(self, c):
-                #enum Groups
+        #enum Groups
         total_entries = 0
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
                                                search_filter='(objectCategory=group)',
@@ -220,7 +214,7 @@ class dcDumlu():
             print('[-] Not found!')
 
     def searchUser(self, c, sUser):
-                #search user
+        #search user
         total_entries = 0
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
                                                search_filter='(&(objectCategory=person)(objectClass=user)(cn=*'+sUser+'*))',
@@ -233,7 +227,6 @@ class dcDumlu():
         for entry in entry_generator:
             if 'dn' in entry:
                 memberOfs = entry['attributes']['memberOf']
-                #print("[+] DN: " + entry['attributes']['distinguishedName'] + " || samAccountName: " + entry['attributes']['sAMAccountName'] + " || Logon count: " + str(entry['attributes']['logonCount']) + " || Admin Count: " + str(entry['attributes']['adminCount']))
                 for memberOf in memberOfs:
                     table.add_row([ entry['attributes']['sAMAccountName'], entry['attributes']['userAccountControl'], entry['attributes']['servicePrincipalName'], entry['attributes']['logonCount'], entry['attributes']['adminCount'], entry['attributes']['distinguishedName'], memberOf])
                 total_entries += 1
@@ -244,8 +237,7 @@ class dcDumlu():
             print('[-] Not found!')
 
     def searchHost(self, c, sHost):
-                #enum all hosts
-                #domain controller: search_filter='(&(objectCategory=Computer)(userAccountControl:1.2.840.113556.1.4.803:=8192))'
+        #search host
         total_entries = 0
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
                                                search_filter='(&(objectCategory=Computer)(cn=*'+sHost+'*))',
@@ -259,7 +251,6 @@ class dcDumlu():
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
-                #print("[+] DN: " + entry['attributes']['distinguishedName'] + " | Operating system: " + entry['attributes']['operatingSystem'] + " | Logon count: " + str(entry['attributes']['logonCount']) + " | Last logon time: " + str(entry['attributes']['lastLogon']))
                 table.add_row([ entry['attributes']['distinguishedName'], entry['attributes']['operatingSystem'], entry['attributes']['userAccountControl'], entry['attributes']['logonCount'], entry['attributes']['lastLogon']])
                 total_entries += 1
         if total_entries > 0:
@@ -272,6 +263,7 @@ class dcDumlu():
             return entry['attributes']['servicePrincipalName']
 
     def groupMembers(self, c, gName):
+        #enum group member and memberOfs
         total_entries = 0
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
                                                search_filter='(&(objectCategory=group)(cn=*'+gName+'*))',
@@ -298,7 +290,7 @@ class dcDumlu():
             print('[-] Not found!')
 
     def usersDescription(self, c):
-                #enum all descriptions of users
+        #enum all descriptions of users
         total_entries = 0
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
                                                search_filter='(&(objectCategory=person)(objectClass=user))',
@@ -310,7 +302,6 @@ class dcDumlu():
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
-                #print("[+] Username: " + entry['attributes']['cn'] + " || samAccountName: " + entry['attributes']['sAMAccountName'] + " || Description: " + str(entry['attributes']['description']))
                 table.add_row([ entry['attributes']['cn'], entry['attributes']['sAMAccountName'], entry['attributes']['description']])
                 total_entries += 1
         if total_entries > 0:
@@ -320,7 +311,7 @@ class dcDumlu():
             print('[-] Not found!')
 
     def hostsDescription(self, c):
-                #enum all descriptions of computers
+        #enum all descriptions of computers
         total_entries = 0
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
                                                search_filter='(objectCategory=Computer)',
@@ -334,7 +325,6 @@ class dcDumlu():
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
-                #print("[+] Computer name: " + entry['attributes']['cn'] + " | Description: " + str(entry['attributes']['description']))
                 table.add_row([ entry['attributes']['cn'], entry['attributes']['description']])
                 total_entries += 1
         if total_entries > 0:
@@ -344,7 +334,7 @@ class dcDumlu():
             print('[-] Not found!')
 
     def hostsUnconstrained(self, c):
-                #domain controller: search_filter='(&(objectCategory=Computer)(userAccountControl:1.2.840.113556.1.4.803:=524288))'
+        #domain controller: search_filter='(&(objectCategory=Computer)(userAccountControl:1.2.840.113556.1.4.803:=524288))'
         total_entries = 0
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
                                                search_filter='(&(objectCategory=Computer)(userAccountControl:1.2.840.113556.1.4.803:=524288)(!(userAccountControl:1.2.840.113556.1.4.803:=8192)))',
@@ -358,7 +348,6 @@ class dcDumlu():
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
-                #print("[+] Computer name: " + entry['attributes']['cn'] + " || Operating system: " + entry['attributes']['operatingSystem'] + " || Logon count: " + str(entry['attributes']['logonCount']) + " || Last logon time: " + str(entry['attributes']['lastLogon']))
                 table.add_row([entry['attributes']['cn'], entry['attributes']['operatingSystem'], entry['attributes']['userAccountControl'],entry['attributes']['logonCount'], entry['attributes']['lastLogon']])
                 total_entries += 1
         if total_entries > 0:
@@ -368,7 +357,7 @@ class dcDumlu():
             print('[-] Not found!')
 
     def hostsConstrained(self, c):
-        # Querying ALL Users with "Trusted For Delegation To Specific Services – Any AuthN
+        # Querying ALL Hosts with "Trusted For Delegation To Specific Services – Any AuthN
         # (&(userAccountControl:1.2.840.113556.1.4.803:=16777216)(msDS-AllowedToDelegateTo=*))
         # Trusted For Delegation To Specific Services – Kerberos AuthN
         # (&(!(|(userAccountControl:1.2.840.113556.1.4.803:=524288)(userAccountControl:1.2.840.113556.1.4.803:=16777216)))(msDS-AllowedToDelegateTo=*))
@@ -416,7 +405,6 @@ class dcDumlu():
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
-                #print("[+] Username: " + entry['attributes']['sAMAccountName'] + " || SPN: " + str(entry['attributes']['servicePrincipalName']) + " || AllowedToDelegateTo: " + str(entry['attributes']['msDS-AllowedToDelegateTo']))
                 services = entry['attributes']['msDS-AllowedToDelegateTo']
                 for service in services:
                     table.add_row([entry['attributes']['sAMAccountName'], entry['attributes']['servicePrincipalName'], service])
@@ -443,7 +431,6 @@ class dcDumlu():
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
-                #print("[+] Username: " + entry['attributes']['sAMAccountName'] + " || SPN: " + str(entry['attributes']['servicePrincipalName']))
                 table.add_row([entry['attributes']['sAMAccountName'], entry['attributes']['servicePrincipalName']])
                 total_entries += 1
         if total_entries > 0:
@@ -603,8 +590,7 @@ class dcDumlu():
             print('[!] '+str(c.result))
 
     def resetObject(self, c, objDn):
-                #enum all objects
-                #domain controller: search_filter='(&(objectCategory=Computer)(userAccountControl:1.2.840.113556.1.4.803:=8192))'
+        #for restoring userAccountControl value of object that has been modified
         total_entries = 0
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
                                                search_filter='(&(objectClass=user)(cn=*'+objDn+'*))',
@@ -618,7 +604,6 @@ class dcDumlu():
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
-                #print("[+] DN: " + entry['attributes']['distinguishedName'] + " | Operating system: " + entry['attributes']['operatingSystem'] + " | Logon count: " + str(entry['attributes']['logonCount']) + " | Last logon time: " + str(entry['attributes']['lastLogon']))
                 table.add_row([ entry['attributes']['distinguishedName'], entry['attributes']['sAMAccountName'], entry['attributes']['userAccountControl']])
                 total_entries += 1
         if total_entries > 0:
