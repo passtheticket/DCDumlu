@@ -9,7 +9,7 @@ pip3 install -r requirements.txt
 python3 DCDumlu.py
 ```
 Then provide `IP address of DC`, `Domain name`, `Username`, `Password or NT hash` for LDAP connection.  
-:warning: **Please note that** `Username` must be like `sAMAccountName` value format and hash format must be like `LM:NT` or `NT:NT`.
+:warning: **Please note that** `Username` must be like `sAMAccountName` value format and hash format must be like `LM:NT` or `NT:NT`.  
 :warning: **On first use, DCDumlu.py may need to be run two or three times for ldap authentication to be successful.** I will fix this problem soon.
 
 ![GitHub Logo](images/mavna.PNG)
