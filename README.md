@@ -38,8 +38,8 @@ addUnconstrained | Modify an object for delegation to any service with Kerberos 
 addConstrained | Modify an object for delegation to specific service
 addAsRepRoasting | Set user option as do not require Kerberos preauthentication for As-Rep Roasting attack
 delAsRepRoasting | Set user option as Kerberos preauthentication is required
-resetObject | Change userAccountControl attribute of object to reset modifications that are Kerberos delegation attacks
-uacTable | Show values fo userAccountControl attribute if you need for resetObject operation
+resetObject | Change userAccountControl attribute of object to reset modifications that are related Kerberos delegation attacks
+uacTable | Show values for userAccountControl attribute if you need for resetObject operation
 help | Print usage
 exit | Exit
 
