@@ -591,21 +591,23 @@ class dcDumlu():
             print('[!] '+str(c.result))
 
     def resetObject(self, c, objDn):
-        #for restoring userAccountControl value of object that has been modified
+        # for restoring userAccountControl value of object that has been modified
         total_entries = 0
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
-                                               search_filter='(&(objectClass=user)(cn=*'+objDn+'*))',
-                                               search_scope=SUBTREE,
-                                               attributes=['distinguishedName', 'sAMAccountName', 'userAccountControl'],
-                                               paged_size=None,
-                                               generator=True)
+                                                         search_filter='(&(objectClass=user)(cn=*' + objDn + '*))',
+                                                         search_scope=SUBTREE,
+                                                         attributes=['distinguishedName', 'sAMAccountName',
+                                                                     'userAccountControl'],
+                                                         paged_size=None,
+                                                         generator=True)
 
-        print("[*] Computers of " + self.domainName + " domain: \n")
+        print("[*] Computers/users of " + self.domainName + " domain: \n")
         table = PrettyTable(['Distinguished Name', 'sAMAccountName', 'userAccountControl'])
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
-                table.add_row([ entry['attributes']['distinguishedName'], entry['attributes']['sAMAccountName'], entry['attributes']['userAccountControl']])
+                table.add_row([entry['attributes']['distinguishedName'], entry['attributes']['sAMAccountName'],
+                               entry['attributes']['userAccountControl']])
                 total_entries += 1
         if total_entries > 0:
             print(table)
@@ -613,26 +615,28 @@ class dcDumlu():
         else:
             print('[-] Not found!')
 
-        if 2 > total_entries:
-            oldUserAccountConrol = entry['attributes']['userAccountControl']
+        if  total_entries == 1:
+            oldUserAccountControl = entry['attributes']['userAccountControl']
             dName = entry['attributes']['distinguishedName']
             table = PrettyTable(['userAccountControl'])
             table.align = "l"
-            table.add_row([str(oldUserAccountConrol)])
+            table.add_row([str(oldUserAccountControl)])
             print(table)
 
-        response = input('[*] Would you like to change value of userAccountControl?(y/n) ')
-        if response == 'y':
-            newUserAccountControl = input('[*] userAccountControl Value: ')
-            c.modify(dName, {'userAccountControl': [(MODIFY_REPLACE, [newUserAccountControl])]})
-            if c.result['description'] == 'success':
-                table = PrettyTable(['DN', 'userAccountControl'])
-                table.align = "l"
-                table.add_row([dName, newUserAccountControl])
-                print(table)
-            else:
-                print('[-] Something went wrong!')
-                print('[!] ' + str(c.result))
+            response = input('[*] Would you like to change value of userAccountControl?(y/n) ')
+            if response == 'y':
+                newUserAccountControl = input('[*] userAccountControl Value: ')
+                c.modify(dName, {'userAccountControl': [(MODIFY_REPLACE, [newUserAccountControl])]})
+                if c.result['description'] == 'success':
+                    table = PrettyTable(['DN', 'userAccountControl'])
+                    table.align = "l"
+                    table.add_row([dName, newUserAccountControl])
+                    print(table)
+                else:
+                    print('[-] Something went wrong!')
+                    print('[!] ' + str(c.result))
+        else:
+            print('[!] To change value of userAccountControl you must specify one user/computer account!')
 
 count = 0
 while True:
