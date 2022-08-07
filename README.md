@@ -32,6 +32,7 @@ unconstrainedUser | Enumerate unconstrained user account
 addUser | Add a user
 addUserToGroup | Add a user to group
 delUser | Delete a user
+getSpns | Getting all user SPNs
 setSpn | Set a servicePrincipalName attribute value
 unSetSpn | Unset a servicePrincipalName attribute value
 addUnconstrained | Modify an object for delegation to any service with Kerberos Auth
