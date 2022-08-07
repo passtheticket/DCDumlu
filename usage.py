@@ -18,6 +18,7 @@ def Helper():
     helpTable.add_row(["addUser", "Add a user"])
     helpTable.add_row(["addUserToGroup", "Add a user to group"])
     helpTable.add_row(["delUser", "Delete a user"])
+    helpTable.add_row(["getSpns", "Getting all user SPNs"])
     helpTable.add_row(["setSpn", "Set a servicePrincipalName attribute value"])
     helpTable.add_row(["unSetSpn", "Unset a servicePrincipalName attribute value"])
     helpTable.add_row(["addUnconstrained", "Modify an object for delegation to any service with Kerberos Auth."])
