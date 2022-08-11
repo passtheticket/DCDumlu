@@ -23,7 +23,6 @@ class dcDumlu():
         self.operation = operation
         self.searchBaseName = searchBaseName
 
-
     def main(self):
 
         # define the server and the connection
@@ -40,7 +39,10 @@ class dcDumlu():
         else:
             print('[+] Connection established...')
 
-        if self.operation == "getHosts":
+        if self.operation == "getDomainSid":
+            self.getDomainSid(c)
+
+        elif self.operation == "getHosts":
             self.enumHosts(c)
 
         elif self.operation == "getUsers":
@@ -87,7 +89,7 @@ class dcDumlu():
 
         elif self.operation == "delUser":
             userDn = input('[*] Distinguished Name of User: ')
-            self.delUser(c,userDn)
+            self.delUser(c, userDn)
 
         elif self.operation == "getSpns":
             self.getSpns(c)
@@ -150,6 +152,12 @@ class dcDumlu():
             print('[-] Invalid operation name!')
             print('[!] Use exit or help to list commands!')
 
+    def getDomainSid(self, c):
+        c.search(search_base=self.searchBaseName, search_filter='(objectClass=domain)', attributes=['dc', 'objectSid'])
+        table = PrettyTable(['Domain Name', 'sid'])
+        table.align = "l"
+        table.add_row([c.entries[0].dc, c.entries[0].objectSid])
+        print(table)
 
     def enumHosts(self, c):
         #enum all hosts
