@@ -27,7 +27,7 @@ class dcDumlu():
 
         # define the server and the connection
         s = Server(self.server, get_info=ALL)
-        c = Connection(s, user=self.domainName+"\\"+self.username, password=self.password, authentication=NTLM)
+        c = Connection(s, user=self.domainName + "\\" + self.username, password=self.password, authentication=NTLM)
         # Hash format | LM:NT hash or NT:NT hash
         # perform the Bind operation
         if not c.bind():
@@ -95,40 +95,40 @@ class dcDumlu():
             self.getSpns(c)
 
         elif self.operation == "setSpn":
-            print('[*] Example DN: cn=unsafe inline,cn=Users,'+ self.searchBaseName)
+            print('[*] Example DN: cn=unsafe inline,cn=Users,' + self.searchBaseName)
             setSpnDn = input('[*] Distinguished Name: ')
             spnName = input('[*] Spn Name: ')
             self.setSpn(c, setSpnDn, spnName)
 
         elif self.operation == "unSetSpn":
-            print('[*] Example DN: cn=unsafe inline,cn=Users,'+ self.searchBaseName)
+            print('[*] Example DN: cn=unsafe inline,cn=Users,' + self.searchBaseName)
             setSpnDn = input('[*] Distinguished Name: ')
             spnName = input('[*] Spn Name: ')
             self.unSetSpn(c, setSpnDn, spnName)
 
         elif self.operation == "addUnconstrained":
-            print('[*] Example DN: cn=unsafe inline,cn=Users,'+ self.searchBaseName)
+            print('[*] Example DN: cn=unsafe inline,cn=Users,' + self.searchBaseName)
             unconstrainedDn = input('[*] Distinguished Name: ')
             self.addUnconstrained(c, unconstrainedDn)
 
         elif self.operation == "addConstrained":
-            print('[*] Example DN: cn=unsafe inline,cn=Users,'+ self.searchBaseName)
+            print('[*] Example DN: cn=unsafe inline,cn=Users,' + self.searchBaseName)
             constrainedDn = input('[*] Target DN for adding Constrained Delegation: ')
             constrainedHostName = input('[*] Computer name for searching services that will be added: ')
-            self.addConstrained(c,constrainedDn, constrainedHostName)
+            self.addConstrained(c, constrainedDn, constrainedHostName)
 
         elif self.operation == "addAsRepRoasting":
-            print('[*] Example DN: cn=unsafe inline,cn=Users,'+ self.searchBaseName)
+            print('[*] Example DN: cn=unsafe inline,cn=Users,' + self.searchBaseName)
             asRepDn = input('[*] Distinguished Name: ')
             self.addAsRep(c, asRepDn)
 
         elif self.operation == "delAsRepRoasting":
-            print('[*] Example DN: cn=unsafe inline,cn=Users,'+ self.searchBaseName)
+            print('[*] Example DN: cn=unsafe inline,cn=Users,' + self.searchBaseName)
             asRepDn = input('[*] Distinguished Name: ')
             self.delAsRep(c, asRepDn)
 
         elif self.operation == "addUserToGroup":
-            print('[*] Example Group DN: cn=Domain Admins,cn=Users,'+ self.searchBaseName)
+            print('[*] Example Group DN: cn=Domain Admins,cn=Users,' + self.searchBaseName)
             user_dn = input('[*] User Distinguished Name: ')
             group_dn = input('[*] Group Distinguished Name: ')
             self.addUserToGroup(c, user_dn, group_dn)
@@ -160,22 +160,24 @@ class dcDumlu():
         print(table)
 
     def enumHosts(self, c):
-        #enum all hosts
-        #domain controller: search_filter='(&(objectCategory=Computer)(userAccountControl:1.2.840.113556.1.4.803:=8192))'
+        # enum all hosts
+        # domain controller: search_filter='(&(objectCategory=Computer)(userAccountControl:1.2.840.113556.1.4.803:=8192))'
         total_entries = 0
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
-                                               search_filter='(objectCategory=Computer)',
-                                               search_scope=SUBTREE,
-                                               attributes=['cn', 'operatingSystem', 'logonCount', 'lastLogon'],
-                                               paged_size=None,
-                                               generator=True)
+                                                         search_filter='(objectCategory=Computer)',
+                                                         search_scope=SUBTREE,
+                                                         attributes=['cn', 'operatingSystem', 'logonCount',
+                                                                     'lastLogon'],
+                                                         paged_size=None,
+                                                         generator=True)
 
         print("[*] Computers of " + self.domainName + " domain: \n")
         table = PrettyTable(['Computer Name', 'Operating System', 'Logon Count', 'Last Logon Time'])
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
-                table.add_row([ entry['attributes']['cn'], entry['attributes']['operatingSystem'], entry['attributes']['logonCount'], entry['attributes']['lastLogon']])
+                table.add_row([entry['attributes']['cn'], entry['attributes']['operatingSystem'],
+                               entry['attributes']['logonCount'], entry['attributes']['lastLogon']])
                 total_entries += 1
         if total_entries > 0:
             print(table)
@@ -184,19 +186,22 @@ class dcDumlu():
             print('[-] Not found!')
 
     def enumUsers(self, c):
-        #enum all users
+        # enum all users
         total_entries = 0
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
-                                               search_filter='(&(objectCategory=person)(objectClass=user))',
-                                               search_scope=SUBTREE,
-                                               attributes=['cn', 'sAMAccountName', 'userAccountControl','logonCount', 'adminCount'])
+                                                         search_filter='(&(objectCategory=person)(objectClass=user))',
+                                                         search_scope=SUBTREE,
+                                                         attributes=['cn', 'sAMAccountName', 'userAccountControl',
+                                                                     'logonCount', 'adminCount'])
 
         print("[*] Users of " + self.domainName + " domain: \n")
         table = PrettyTable(['Username', 'samAccountName', 'userAccountControl', 'Logon Count', 'Admin Count'])
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
-                table.add_row([ entry['attributes']['cn'], entry['attributes']['sAMAccountName'], entry['attributes']['userAccountControl'], entry['attributes']['logonCount'], entry['attributes']['adminCount']])
+                table.add_row([entry['attributes']['cn'], entry['attributes']['sAMAccountName'],
+                               entry['attributes']['userAccountControl'], entry['attributes']['logonCount'],
+                               entry['attributes']['adminCount']])
                 total_entries += 1
         if total_entries > 0:
             print(table)
@@ -205,19 +210,19 @@ class dcDumlu():
             print('[-] Not found!')
 
     def enumGroups(self, c):
-        #enum Groups
+        # enum Groups
         total_entries = 0
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
-                                               search_filter='(objectCategory=group)',
-                                               search_scope=SUBTREE,
-                                               attributes=['cn', 'distinguishedName'])
+                                                         search_filter='(objectCategory=group)',
+                                                         search_scope=SUBTREE,
+                                                         attributes=['cn', 'distinguishedName'])
 
         print("[*] Groups of " + self.domainName + " domain: \n")
         table = PrettyTable(['Name', 'Distinguished Name'])
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
-                table.add_row([ entry['attributes']['cn'], entry['attributes']['distinguishedName']])
+                table.add_row([entry['attributes']['cn'], entry['attributes']['distinguishedName']])
                 total_entries += 1
         if total_entries > 0:
             print(table)
@@ -226,21 +231,28 @@ class dcDumlu():
             print('[-] Not found!')
 
     def searchUser(self, c, sUser):
-        #search user
+        # search user
         total_entries = 0
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
-                                               search_filter='(&(objectCategory=person)(objectClass=user)(cn=*'+sUser+'*))',
-                                               search_scope=SUBTREE,
-                                               attributes=['sAMAccountName', 'userAccountControl','servicePrincipalName','logonCount', 'adminCount', 'distinguishedName', 'memberOf'])
+                                                         search_filter='(&(objectCategory=person)(objectClass=user)(cn=*' + sUser + '*))',
+                                                         search_scope=SUBTREE,
+                                                         attributes=['sAMAccountName', 'userAccountControl',
+                                                                     'servicePrincipalName', 'logonCount', 'adminCount',
+                                                                     'distinguishedName', 'memberOf'])
 
         print("[*] Users of " + self.domainName + " domain: \n")
-        table = PrettyTable(['samAccountName', 'userAccountControl','servicePrincipalName','Logon Count', 'Admin Count', 'Distinguished Name', 'Member Of'])
+        table = PrettyTable(
+            ['samAccountName', 'userAccountControl', 'servicePrincipalName', 'Logon Count', 'Admin Count',
+             'Distinguished Name', 'Member Of'])
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
                 memberOfs = entry['attributes']['memberOf']
                 for memberOf in memberOfs:
-                    table.add_row([ entry['attributes']['sAMAccountName'], entry['attributes']['userAccountControl'], entry['attributes']['servicePrincipalName'], entry['attributes']['logonCount'], entry['attributes']['adminCount'], entry['attributes']['distinguishedName'], memberOf])
+                    table.add_row([entry['attributes']['sAMAccountName'], entry['attributes']['userAccountControl'],
+                                   entry['attributes']['servicePrincipalName'], entry['attributes']['logonCount'],
+                                   entry['attributes']['adminCount'], entry['attributes']['distinguishedName'],
+                                   memberOf])
                 total_entries += 1
         if total_entries > 0:
             print(table)
@@ -249,21 +261,26 @@ class dcDumlu():
             print('[-] Not found!')
 
     def searchHost(self, c, sHost):
-        #search host
+        # search host
         total_entries = 0
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
-                                               search_filter='(&(objectCategory=Computer)(cn=*'+sHost+'*))',
-                                               search_scope=SUBTREE,
-                                               attributes=['distinguishedName', 'operatingSystem', 'userAccountControl', 'logonCount', 'lastLogon', 'servicePrincipalName'],
-                                               paged_size=None,
-                                               generator=True)
+                                                         search_filter='(&(objectCategory=Computer)(cn=*' + sHost + '*))',
+                                                         search_scope=SUBTREE,
+                                                         attributes=['distinguishedName', 'operatingSystem',
+                                                                     'userAccountControl', 'logonCount', 'lastLogon',
+                                                                     'servicePrincipalName'],
+                                                         paged_size=None,
+                                                         generator=True)
 
         print("[*] Computers of " + self.domainName + " domain: \n")
-        table = PrettyTable(['Distinguished Name', 'Operating System', 'userAccountControl', 'Logon Count', 'Last Logon Time'])
+        table = PrettyTable(
+            ['Distinguished Name', 'Operating System', 'userAccountControl', 'Logon Count', 'Last Logon Time'])
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
-                table.add_row([ entry['attributes']['distinguishedName'], entry['attributes']['operatingSystem'], entry['attributes']['userAccountControl'], entry['attributes']['logonCount'], entry['attributes']['lastLogon']])
+                table.add_row([entry['attributes']['distinguishedName'], entry['attributes']['operatingSystem'],
+                               entry['attributes']['userAccountControl'], entry['attributes']['logonCount'],
+                               entry['attributes']['lastLogon']])
                 total_entries += 1
         if total_entries > 0:
             print(table)
@@ -275,14 +292,14 @@ class dcDumlu():
             return entry['attributes']['servicePrincipalName']
 
     def groupMembers(self, c, gName):
-        #enum group member and memberOfs
+        # enum group member and memberOfs
         total_entries = 0
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
-                                               search_filter='(&(objectCategory=group)(cn=*'+gName+'*))',
-                                               search_scope=SUBTREE,
-                                               attributes=['cn', 'member', 'memberOf'],
-                                               paged_size=None,
-                                               generator=True)
+                                                         search_filter='(&(objectCategory=group)(cn=*' + gName + '*))',
+                                                         search_scope=SUBTREE,
+                                                         attributes=['cn', 'member', 'memberOf'],
+                                                         paged_size=None,
+                                                         generator=True)
 
         print("[*] Groups of " + self.domainName + " domain: \n")
         table = PrettyTable(['Name', 'Member', 'Member Of'])
@@ -293,7 +310,7 @@ class dcDumlu():
                 members = entry['attributes']['member']
                 for memberOf in memberOfs:
                     for member in members:
-                        table.add_row([ entry['attributes']['cn'], member, memberOf])
+                        table.add_row([entry['attributes']['cn'], member, memberOf])
                         total_entries += 1
         if total_entries > 0:
             print(table)
@@ -302,19 +319,20 @@ class dcDumlu():
             print('[-] Not found!')
 
     def usersDescription(self, c):
-        #enum all descriptions of users
+        # enum all descriptions of users
         total_entries = 0
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
-                                               search_filter='(&(objectCategory=person)(objectClass=user))',
-                                               search_scope=SUBTREE,
-                                               attributes=['cn', 'sAMAccountName', 'description'])
+                                                         search_filter='(&(objectCategory=person)(objectClass=user))',
+                                                         search_scope=SUBTREE,
+                                                         attributes=['cn', 'sAMAccountName', 'description'])
 
         print("[*] Users of " + self.domainName + " domain: \n")
         table = PrettyTable(['Username', 'samAccountName', 'Description'])
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
-                table.add_row([ entry['attributes']['cn'], entry['attributes']['sAMAccountName'], entry['attributes']['description']])
+                table.add_row([entry['attributes']['cn'], entry['attributes']['sAMAccountName'],
+                               entry['attributes']['description']])
                 total_entries += 1
         if total_entries > 0:
             print(table)
@@ -323,21 +341,21 @@ class dcDumlu():
             print('[-] Not found!')
 
     def hostsDescription(self, c):
-        #enum all descriptions of computers
+        # enum all descriptions of computers
         total_entries = 0
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
-                                               search_filter='(objectCategory=Computer)',
-                                               search_scope=SUBTREE,
-                                               attributes=['cn', 'description'],
-                                               paged_size=None,
-                                               generator=True)
+                                                         search_filter='(objectCategory=Computer)',
+                                                         search_scope=SUBTREE,
+                                                         attributes=['cn', 'description'],
+                                                         paged_size=None,
+                                                         generator=True)
 
         print("[*] Computers of " + self.domainName + " domain: \n")
         table = PrettyTable(['Computer Name', 'Description'])
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
-                table.add_row([ entry['attributes']['cn'], entry['attributes']['description']])
+                table.add_row([entry['attributes']['cn'], entry['attributes']['description']])
                 total_entries += 1
         if total_entries > 0:
             print(table)
@@ -346,21 +364,25 @@ class dcDumlu():
             print('[-] Not found!')
 
     def hostsUnconstrained(self, c):
-        #domain controller: search_filter='(&(objectCategory=Computer)(userAccountControl:1.2.840.113556.1.4.803:=524288))'
+        # domain controller: search_filter='(&(objectCategory=Computer)(userAccountControl:1.2.840.113556.1.4.803:=524288))'
         total_entries = 0
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
-                                               search_filter='(&(objectCategory=Computer)(userAccountControl:1.2.840.113556.1.4.803:=524288)(!(userAccountControl:1.2.840.113556.1.4.803:=8192)))',
-                                               search_scope=SUBTREE,
-                                               attributes=['cn', 'operatingSystem', 'userAccountControl', 'logonCount', 'lastLogon'],
-                                               paged_size=None,
-                                               generator=True)
+                                                         search_filter='(&(objectCategory=Computer)(userAccountControl:1.2.840.113556.1.4.803:=524288)(!(userAccountControl:1.2.840.113556.1.4.803:=8192)))',
+                                                         search_scope=SUBTREE,
+                                                         attributes=['cn', 'operatingSystem', 'userAccountControl',
+                                                                     'logonCount', 'lastLogon'],
+                                                         paged_size=None,
+                                                         generator=True)
 
         print("[*] Unconstrained Delegation Computers of " + self.domainName + " domain: \n")
-        table = PrettyTable(['Computer Name', 'Operating System', 'userAccountControl' ,'Logon Count', 'Last Logon Time'])
+        table = PrettyTable(
+            ['Computer Name', 'Operating System', 'userAccountControl', 'Logon Count', 'Last Logon Time'])
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
-                table.add_row([entry['attributes']['cn'], entry['attributes']['operatingSystem'], entry['attributes']['userAccountControl'],entry['attributes']['logonCount'], entry['attributes']['lastLogon']])
+                table.add_row([entry['attributes']['cn'], entry['attributes']['operatingSystem'],
+                               entry['attributes']['userAccountControl'], entry['attributes']['logonCount'],
+                               entry['attributes']['lastLogon']])
                 total_entries += 1
         if total_entries > 0:
             print(table)
@@ -377,9 +399,10 @@ class dcDumlu():
         # (&(objectCategory=Computer))
         total_entries = 0
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
-                                               search_filter='(&(|(&(!(|(userAccountControl:1.2.840.113556.1.4.803:=524288)(userAccountControl:1.2.840.113556.1.4.803:=16777216)))(msDS-AllowedToDelegateTo=*))(&(userAccountControl:1.2.840.113556.1.4.803:=16777216)(msDS-AllowedToDelegateTo=*)))(objectCategory=computer))',
-                                               search_scope=SUBTREE,
-                                               attributes=['sAMAccountName', 'userAccountControl', 'msDS-AllowedToDelegateTo'])
+                                                         search_filter='(&(|(&(!(|(userAccountControl:1.2.840.113556.1.4.803:=524288)(userAccountControl:1.2.840.113556.1.4.803:=16777216)))(msDS-AllowedToDelegateTo=*))(&(userAccountControl:1.2.840.113556.1.4.803:=16777216)(msDS-AllowedToDelegateTo=*)))(objectCategory=computer))',
+                                                         search_scope=SUBTREE,
+                                                         attributes=['sAMAccountName', 'userAccountControl',
+                                                                     'msDS-AllowedToDelegateTo'])
 
         print("[*] Constrained Hosts of " + self.domainName + " domain: \n")
         print("[*] Querying ALL Hosts with trusted for delegation to specific services (any auth or kerberos)...")
@@ -387,10 +410,11 @@ class dcDumlu():
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
-                #print("[+] Username: " + entry['attributes']['sAMAccountName'] + " || SPN: " + str(entry['attributes']['servicePrincipalName']) + " || AllowedToDelegateTo: " + str(entry['attributes']['msDS-AllowedToDelegateTo']))
+                # print("[+] Username: " + entry['attributes']['sAMAccountName'] + " || SPN: " + str(entry['attributes']['servicePrincipalName']) + " || AllowedToDelegateTo: " + str(entry['attributes']['msDS-AllowedToDelegateTo']))
                 services = entry['attributes']['msDS-AllowedToDelegateTo']
                 for service in services:
-                    table.add_row([entry['attributes']['sAMAccountName'], entry['attributes']['userAccountControl'], service])
+                    table.add_row(
+                        [entry['attributes']['sAMAccountName'], entry['attributes']['userAccountControl'], service])
                 total_entries += 1
         if total_entries > 0:
             print(table)
@@ -407,9 +431,10 @@ class dcDumlu():
         # (&(objectCategory=person))
         total_entries = 0
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
-                                               search_filter='(&(|(&(!(|(userAccountControl:1.2.840.113556.1.4.803:=524288)(userAccountControl:1.2.840.113556.1.4.803:=16777216)))(msDS-AllowedToDelegateTo=*))(&(userAccountControl:1.2.840.113556.1.4.803:=16777216)(msDS-AllowedToDelegateTo=*)))(objectCategory=person))',
-                                               search_scope=SUBTREE,
-                                               attributes=['sAMAccountName', 'servicePrincipalName', 'msDS-AllowedToDelegateTo'])
+                                                         search_filter='(&(|(&(!(|(userAccountControl:1.2.840.113556.1.4.803:=524288)(userAccountControl:1.2.840.113556.1.4.803:=16777216)))(msDS-AllowedToDelegateTo=*))(&(userAccountControl:1.2.840.113556.1.4.803:=16777216)(msDS-AllowedToDelegateTo=*)))(objectCategory=person))',
+                                                         search_scope=SUBTREE,
+                                                         attributes=['sAMAccountName', 'servicePrincipalName',
+                                                                     'msDS-AllowedToDelegateTo'])
 
         print("[*] Constrained Users of " + self.domainName + " domain: \n")
         print("[*] Querying ALL Users with trusted for delegation to specific services (any auth or kerberos)...")
@@ -419,7 +444,8 @@ class dcDumlu():
             if 'dn' in entry:
                 services = entry['attributes']['msDS-AllowedToDelegateTo']
                 for service in services:
-                    table.add_row([entry['attributes']['sAMAccountName'], entry['attributes']['servicePrincipalName'], service])
+                    table.add_row(
+                        [entry['attributes']['sAMAccountName'], entry['attributes']['servicePrincipalName'], service])
                 total_entries += 1
         if total_entries > 0:
             print(table)
@@ -433,9 +459,9 @@ class dcDumlu():
 
         total_entries = 0
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
-                                               search_filter='(&(objectCategory=person)(objectClass=user)(userAccountControl:1.2.840.113556.1.4.803:=524288))',
-                                               search_scope=SUBTREE,
-                                               attributes=['sAMAccountName', 'servicePrincipalName'])
+                                                         search_filter='(&(objectCategory=person)(objectClass=user)(userAccountControl:1.2.840.113556.1.4.803:=524288))',
+                                                         search_scope=SUBTREE,
+                                                         attributes=['sAMAccountName', 'servicePrincipalName'])
 
         print("[*] Unconstrained Users of " + self.domainName + " domain: \n")
         print("[*] Querying ALL Users with trusted for delegation to any service (kerberos only)...")
@@ -452,26 +478,28 @@ class dcDumlu():
             print('[-] Not found!')
 
     def addUser(self, c, givenName, sn, sAMAccountName):
-        addUserDn = 'cn='+ givenName + ' ' + sn + ',cn=Users,' + self.searchBaseName
-        c.add(addUserDn, 'inetOrgPerson', {'givenName': givenName, 'sn': sn, 'sAMAccountName': sAMAccountName, 'userPrincipalName': sAMAccountName+'@'+self.domainName})
+        addUserDn = 'cn=' + givenName + ' ' + sn + ',cn=Users,' + self.searchBaseName
+        c.add(addUserDn, 'inetOrgPerson', {'givenName': givenName, 'sn': sn, 'sAMAccountName': sAMAccountName,
+                                           'userPrincipalName': sAMAccountName + '@' + self.domainName})
         c.modify(addUserDn, {'userAccountControl': (MODIFY_REPLACE, [544])})
         if c.result['description'] == 'success':
             print('[+] ' + sAMAccountName + ' is added!')
-            print('[+] Distinguished Name: '+addUserDn)
+            print('[+] Distinguished Name: ' + addUserDn)
             print('[!] User must change password at next logon.')
         else:
             print('[!] Are you sure that you have adding user permission?')
             print('[!] If yes, please provide Distinguished Name additionaly')
-            print('[*] Example: cn=unsafe inline,cn=Users,'+ self.searchBaseName)
+            print('[*] Example: cn=unsafe inline,cn=Users,' + self.searchBaseName)
             addUserDn = input('[*] Distinguished Name: ')
             givenName = input('[*] First Name: ')
             sn = input('[*] Last Name: ')
             sAMAccountName = input('[*] sAMAccountName: ')
-            c.add(addUserDn, 'inetOrgPerson', {'givenName': givenName, 'sn': sn, 'sAMAccountName': sAMAccountName, 'userPrincipalName': sAMAccountName+'@'+self.domainName})
+            c.add(addUserDn, 'inetOrgPerson', {'givenName': givenName, 'sn': sn, 'sAMAccountName': sAMAccountName,
+                                               'userPrincipalName': sAMAccountName + '@' + self.domainName})
             c.modify(addUserDn, {'userAccountControl': (MODIFY_REPLACE, [544])})
             if c.result['description'] == 'success':
                 print('[+] ' + sAMAccountName + ' is added!')
-                print('[+] Distinguished Name: '+addUserDn)
+                print('[+] Distinguished Name: ' + addUserDn)
                 print('[!] User must change password at next logon.')
             else:
                 print('[-] ' + sAMAccountName + ' is not added!')
@@ -482,15 +510,15 @@ class dcDumlu():
         if result is True:
             print('[+] ' + user_dn + ' was added to ' + group_dn)
         else:
-            print('[-] User was not added to '+ group_dn)
+            print('[-] User was not added to ' + group_dn)
             print('[!] ' + c.result['message'])
 
-    def delUser(self, c,userDn):
+    def delUser(self, c, userDn):
         c.delete(userDn)
         if c.result['description'] == 'success':
-            print('[+] '+ userDn + ' is deleted.')
+            print('[+] ' + userDn + ' is deleted.')
         elif c.result['description'] == 'noSuchObject':
-            print('[-] No such object! '+userDn)
+            print('[-] No such object! ' + userDn)
         elif c.result['description'] == 'insufficientAccessRights':
             print('[-] Access is denied!')
         else:
@@ -498,18 +526,19 @@ class dcDumlu():
             print('[!] ' + c.result['message'])
 
     def getSpns(self, c):
-        #Getting all user SPNs for the kerberoasting attack. The krbtgt account is excluded.
+        # Getting all user SPNs for the kerberoasting attack. The krbtgt account is excluded.
         total_entries = 0
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
-                                               search_filter='(&(&(objectCategory=person)(objectClass=user)(servicePrincipalName=*))(!(sAMAccountName=krbtgt)))',
-                                               search_scope=SUBTREE,
-                                               attributes=['cn', 'sAMAccountName', 'servicePrincipalName'])
+                                                         search_filter='(&(&(objectCategory=person)(objectClass=user)(servicePrincipalName=*))(!(sAMAccountName=krbtgt)))',
+                                                         search_scope=SUBTREE,
+                                                         attributes=['cn', 'sAMAccountName', 'servicePrincipalName'])
 
         table = PrettyTable(['Name', 'sAMAccountName', 'servicePrincipalName'])
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
-                table.add_row([entry['attributes']['cn'], entry['attributes']['sAMAccountName'], entry['attributes']['servicePrincipalName']])
+                table.add_row([entry['attributes']['cn'], entry['attributes']['sAMAccountName'],
+                               entry['attributes']['servicePrincipalName']])
                 total_entries += 1
         if total_entries > 0:
             print(table)
@@ -523,17 +552,17 @@ class dcDumlu():
             print('[-] Object is not found! Distinguished name is wrong.')
         elif c.result['result'] == 19:
             print('[-] SPN format is invalid.')
-            print('[!] '+c.result['message'])
+            print('[!] ' + c.result['message'])
         elif c.result['result'] == 20:
             print('[-] SPN is duplicated.')
-            print('[!] '+c.result['message'])
+            print('[!] ' + c.result['message'])
         elif c.result['result'] == 0:
             print('[+] ' + spnName + ' is added.')
         elif c.result['description'] == 'insufficientAccessRights':
             print('[-] Access is denied!')
         else:
             print('[-] Something went wrong!')
-            print('[!] '+c.result['message'])
+            print('[!] ' + c.result['message'])
 
     def unSetSpn(self, c, setSpnDn, spnName):
         c.modify(setSpnDn, {'servicePrincipalName': [(MODIFY_DELETE, [spnName])]})
@@ -541,20 +570,20 @@ class dcDumlu():
             print('[-] Object is not found! Distinguished name is wrong.')
         elif c.result['result'] == 19:
             print('[-] SPN format is invalid.')
-            print('[!] '+c.result['message'])
+            print('[!] ' + c.result['message'])
         elif c.result['result'] == 16:
             print('[-] No such attribute. The SPN is wrong!')
-            print('[!] '+c.result['message'])
+            print('[!] ' + c.result['message'])
         elif c.result['result'] == 0:
             print('[+] ' + spnName + ' is deleted.')
         elif c.result['description'] == 'insufficientAccessRights':
             print('[-] Access is denied!')
         else:
             print('[-] Something went wrong!')
-            print('[!] '+c.result['message'])
+            print('[!] ' + c.result['message'])
 
     def addUnconstrained(self, c, unconstrainedDn):
-        #userAccountControl 524288 TRUSTED_FOR_DELEGATION
+        # userAccountControl 524288 TRUSTED_FOR_DELEGATION
         c.modify(unconstrainedDn, {'userAccountControl': [(MODIFY_REPLACE, [524288])]})
         if c.result['description'] == 'success':
             print('[+] Trust this ' + unconstrainedDn + ' for delegation to any service(Kerberos only)')
@@ -562,11 +591,11 @@ class dcDumlu():
             print('[-] Access is denied!')
         else:
             print('[-] Something went wrong!')
-            print('[!] '+c.result['message'])
+            print('[!] ' + c.result['message'])
 
     def addConstrained(self, c, constrainedDn, constrainedHostName):
-        #userAccountControl 512 NORMAL_ACCOUNT
-        #userAccountControl 16777216 TRUSTED_TO_AUTH_FOR_DELEGATION
+        # userAccountControl 512 NORMAL_ACCOUNT
+        # userAccountControl 16777216 TRUSTED_TO_AUTH_FOR_DELEGATION
         hostSpns = self.searchHost(c, constrainedHostName)
         if hostSpns is not None:
             table = PrettyTable(['SPNs of Computer'])
@@ -581,23 +610,23 @@ class dcDumlu():
             c.modify(constrainedDn, {'msDS-AllowedToDelegateTo': [(MODIFY_ADD, formattedAllowedToDelegateTo)]})
 
             if c.result['description'] == 'noSuchObject':
-                print('[-] No such object like: '+ constrainedDn)
+                print('[-] No such object like: ' + constrainedDn)
             elif c.result['description'] == 'success':
-                print('[+] Constrained delegation is added for '+ constrainedDn)
+                print('[+] Constrained delegation is added for ' + constrainedDn)
             elif c.result['description'] == 'insufficientAccessRights':
                 print('[-] Access is denied!')
             elif c.result['description'] == 'attributeOrValueExists':
                 print('[!] Attribute or value had been added already.')
             else:
                 print('[-] Something went wrong!')
-                print('[!] '+c.result['message'])
+                print('[!] ' + c.result['message'])
 
         else:
             print('[-] Computer account was not found!')
 
     def addAsRep(self, c, asRepDn):
-        #userAccountControl 4194304 DONT_REQ_PREAUTH
-        #userAccountControl 512 NORMAL_ACCOUNT
+        # userAccountControl 4194304 DONT_REQ_PREAUTH
+        # userAccountControl 512 NORMAL_ACCOUNT
         c.modify(asRepDn, {'userAccountControl': [(MODIFY_REPLACE, [4194816])]})
         if c.result['description'] == 'success':
             print('[+] Do not require Kerberos preauthentication for ' + asRepDn)
@@ -606,11 +635,11 @@ class dcDumlu():
             print('[-] Access is denied!')
         else:
             print('[-] Something went wrong!')
-            print('[!] '+str(c.result))
+            print('[!] ' + str(c.result))
 
     def delAsRep(self, c, asRepDn):
-        #userAccountControl 4194304 DONT_REQ_PREAUTH
-        #userAccountControl 512 NORMAL_ACCOUNT
+        # userAccountControl 4194304 DONT_REQ_PREAUTH
+        # userAccountControl 512 NORMAL_ACCOUNT
         c.modify(asRepDn, {'userAccountControl': [(MODIFY_REPLACE, [512])]})
         if c.result['description'] == 'success':
             print('[+] Kerberos preauthentication is required for ' + asRepDn)
@@ -619,7 +648,7 @@ class dcDumlu():
             print('[-] Access is denied!')
         else:
             print('[-] Something went wrong!')
-            print('[!] '+str(c.result))
+            print('[!] ' + str(c.result))
 
     def resetObject(self, c, objDn):
         # for restoring userAccountControl value of object that has been modified
@@ -646,7 +675,7 @@ class dcDumlu():
         else:
             print('[-] Not found!')
 
-        if  total_entries == 1:
+        if total_entries == 1:
             oldUserAccountControl = entry['attributes']['userAccountControl']
             dName = entry['attributes']['distinguishedName']
             table = PrettyTable(['userAccountControl'])
@@ -669,35 +698,40 @@ class dcDumlu():
         else:
             print('[!] To change value of userAccountControl you must specify one user/computer account!')
 
+
 count = 0
 while True:
     try:
-        #print banner
-        banner.dumlupinar()
-        server = input('[*] IP address of DC: ')
-        domainName = input('[*] Domain name: ')
-        username = input('[*] Username: ')
-        password = getpass.getpass(prompt='[*] Password or NT Hash: ', stream=None)
-        #Getting searchbase name
-        searchBase = domainName.split('.')
-        size = len(searchBase)
-        if size < 2:
-            print("[-] Provide domain's DNS name! Example: unsafe.local")
-            sys.exit(1)
-        elif size < 3:
-            searchBaseName = 'DC=' + searchBase[0] + ',DC=' + searchBase[1]
-        elif size < 4:
-            searchBaseName = 'DC=' + searchBase[0] + ',DC=' + searchBase[1] + ',DC=' + searchBase[2]
-        elif size < 5:
-            searchBaseName = 'DC=' + searchBase[0] + ',DC=' + searchBase[1] + ',DC=' + searchBase[2] + ',DC=' + searchBase[3]
-        elif size < 6:
-            searchBaseName = 'DC=' + searchBase[0] + ',DC=' + searchBase[1] + ',DC=' + searchBase[2] + ',DC=' + searchBase[3] + ',DC=' + searchBase[4]
-        else:
-            print("[-] Unexpected domain name!")
-            sys.exit(1)
+        # to avoid exiting after an error
+        if count == 0:
+            # print banner
+            banner.dumlupinar()
+            server = input('[*] IP address of DC: ')
+            domainName = input('[*] Domain name: ')
+            username = input('[*] Username: ')
+            password = getpass.getpass(prompt='[*] Password or NT Hash: ', stream=None)
+            # Getting searchbase name
+            searchBase = domainName.split('.')
+            size = len(searchBase)
+            if size < 2:
+                print("[-] Provide domain's DNS name! Example: unsafe.local")
+                sys.exit(1)
+            elif size < 3:
+                searchBaseName = 'DC=' + searchBase[0] + ',DC=' + searchBase[1]
+            elif size < 4:
+                searchBaseName = 'DC=' + searchBase[0] + ',DC=' + searchBase[1] + ',DC=' + searchBase[2]
+            elif size < 5:
+                searchBaseName = 'DC=' + searchBase[0] + ',DC=' + searchBase[1] + ',DC=' + searchBase[2] + ',DC=' + \
+                                 searchBase[3]
+            elif size < 6:
+                searchBaseName = 'DC=' + searchBase[0] + ',DC=' + searchBase[1] + ',DC=' + searchBase[2] + ',DC=' + \
+                                 searchBase[3] + ',DC=' + searchBase[4]
+            else:
+                print("[-] Unexpected domain name!")
+                sys.exit(1)
         count += 1
         while (count > 0):
-            operation = input(Style.BRIGHT + username+'@'+domainName+':~$ ' + Style.RESET_ALL)
+            operation = input(Style.BRIGHT + username + '@' + domainName + ':~$ ' + Style.RESET_ALL)
             dumlupinar = dcDumlu(server, domainName, username, password, operation, searchBaseName)
             dumlupinar.main()
 
@@ -706,5 +740,5 @@ while True:
         sys.exit(0)
 
     except Exception as e:
-        print('[-] '+ str(e))
-        sys.exit(1)
+        print('[-] ' + str(e))
+        continue
