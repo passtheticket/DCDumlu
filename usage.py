@@ -3,6 +3,7 @@ from prettytable import PrettyTable
 def Helper():
     helpTable = PrettyTable(["Commands", "Descriptions"])
     helpTable.align = "l"
+    helpTable.add_row(["getDomainSid", "Get domain SID"])
     helpTable.add_row(["getHosts","Dump hosts information"])
     helpTable.add_row(["getUsers", "Dump users information"])
     helpTable.add_row(["getGroups", "Dump groups information"])
@@ -26,7 +27,8 @@ def Helper():
     helpTable.add_row(["addAsRepRoasting", "Set user option as do not require Kerberos preauthentication for As-Rep Roasting attack"])
     helpTable.add_row(["delAsRepRoasting", "Set user option as Kerberos preauthentication is required"])
     helpTable.add_row(["resetObject", "Change userAccountControl attribute of object to reset modifications that are Kerberos delegation attacks"])
-    helpTable.add_row(["uacTable", "Show values fo userAccountControl attribute if you need for resetObject operation"])
+    helpTable.add_row(["uacTable", "Show values for userAccountControl attribute if you need for resetObject operation"])
     helpTable.add_row(["help", "Print usage"])
+    helpTable.add_row(["?", "Print usage"])
     helpTable.add_row(["exit", "Exit"])
     print(helpTable)
