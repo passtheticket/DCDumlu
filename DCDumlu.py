@@ -144,6 +144,9 @@ class dcDumlu():
         elif self.operation == "uacTable":
             uactable.userAccountControlTable()
 
+        elif self.operation == "checkConnection":
+            self.checkConnection(c)
+
         elif self.operation == "exit":
             print('[*] Exiting...')
             sys.exit(0)
@@ -151,6 +154,7 @@ class dcDumlu():
         else:
             print('[-] Invalid operation name!')
             print('[!] Use exit or help to list commands!')
+
 
     def getDomainSid(self, c):
         c.search(search_base=self.searchBaseName, search_filter='(objectClass=domain)', attributes=['dc', 'objectSid'])
@@ -649,6 +653,9 @@ class dcDumlu():
         else:
             print('[-] Something went wrong!')
             print('[!] ' + str(c.result))
+
+    def checkConnection(self, c):
+        print('[*] ' + str(c))
 
     def resetObject(self, c, objDn):
         # for restoring userAccountControl value of object that has been modified
