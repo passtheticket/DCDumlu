@@ -17,6 +17,7 @@ Then provide `IP address of DC`, `Domain name`, `Username`, `Password or NT hash
 ## Usage
 Commands | Descriptions
 ------------ | -------------
+getDomainSid | Get domain SID
 getHosts | Dump hosts information
 getUsers | Dump users information
 getGroups | Dump groups information
@@ -42,6 +43,7 @@ delAsRepRoasting | Set user option as Kerberos preauthentication is required
 resetObject | Change userAccountControl attribute of object to reset modifications that are related Kerberos delegation attacks
 uacTable | Show values for userAccountControl attribute if you need for resetObject operation
 help | Print usage
+? | Print usage
 exit | Exit
 
 ## Details
