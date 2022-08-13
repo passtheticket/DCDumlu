@@ -709,33 +709,37 @@ class dcDumlu():
 count = 0
 while True:
     try:
-        #print banner
-        banner.dumlupinar()
-        server = input('[*] IP address of DC: ')
-        domainName = input('[*] Domain name: ')
-        username = input('[*] Username: ')
-        password = getpass.getpass(prompt='[*] Password or NT Hash: ', stream=None)
-        #Getting searchbase name
-        searchBase = domainName.split('.')
-        size = len(searchBase)
-        if size < 2:
-            print("[-] Provide domain's DNS name! Example: unsafe.local")
-            continue
-        elif size < 3:
-            searchBaseName = 'DC=' + searchBase[0] + ',DC=' + searchBase[1]
-        elif size < 4:
-            searchBaseName = 'DC=' + searchBase[0] + ',DC=' + searchBase[1] + ',DC=' + searchBase[2]
-        elif size < 5:
-            searchBaseName = 'DC=' + searchBase[0] + ',DC=' + searchBase[1] + ',DC=' + searchBase[2] + ',DC=' + searchBase[3]
-        elif size < 6:
-            searchBaseName = 'DC=' + searchBase[0] + ',DC=' + searchBase[1] + ',DC=' + searchBase[2] + ',DC=' + searchBase[3] + ',DC=' + searchBase[4]
-        else:
-            print("[-] Unexpected domain name!")
-            sys.exit(1)
+        # to avoid exiting after an error
+        if count == 0:
+            # print banner
+            banner.dumlupinar()
+            server = input('[*] IP address of DC: ')
+            domainName = input('[*] Domain name: ')
+            username = input('[*] Username: ')
+            password = getpass.getpass(prompt='[*] Password or NT Hash: ', stream=None)
+            # Getting searchbase name
+            searchBase = domainName.split('.')
+            size = len(searchBase)
+            if size < 2:
+                print("[-] Provide domain's DNS name! Example: unsafe.local")
+                continue
+            elif size < 3:
+                searchBaseName = 'DC=' + searchBase[0] + ',DC=' + searchBase[1]
+            elif size < 4:
+                searchBaseName = 'DC=' + searchBase[0] + ',DC=' + searchBase[1] + ',DC=' + searchBase[2]
+            elif size < 5:
+                searchBaseName = 'DC=' + searchBase[0] + ',DC=' + searchBase[1] + ',DC=' + searchBase[2] + ',DC=' + \
+                                 searchBase[3]
+            elif size < 6:
+                searchBaseName = 'DC=' + searchBase[0] + ',DC=' + searchBase[1] + ',DC=' + searchBase[2] + ',DC=' + \
+                                 searchBase[3] + ',DC=' + searchBase[4]
+            else:
+                print("[-] Unexpected domain name!")
+                sys.exit(1)
 
-        if not password or not username:
-            print("[-] Password/NT Hash or username is required!")
-            continue
+            if not password or not username:
+                print("[-] Password/NT Hash or username is required!")
+                continue
         count += 1
         while (count > 0):
             operation = input(Style.BRIGHT + username+'@'+domainName+':~$ ' + Style.RESET_ALL)
