@@ -42,6 +42,7 @@ addAsRepRoasting | Set user option as do not require Kerberos preauthentication 
 delAsRepRoasting | Set user option as Kerberos preauthentication is required
 resetObject | Change userAccountControl attribute of object to reset modifications that are related Kerberos delegation attacks
 uacTable | Show values for userAccountControl attribute if you need for resetObject operation
+checkConnection | Get connection details
 help | Print usage
 ? | Print usage
 exit | Exit
