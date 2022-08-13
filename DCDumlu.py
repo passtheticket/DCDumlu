@@ -3,6 +3,7 @@
 import getpass
 import sys
 
+import socket
 from ldap3 import Server, Connection, ALL, NTLM, SUBTREE, MODIFY_REPLACE, MODIFY_ADD, MODIFY_DELETE
 from ldap3.extend.microsoft.addMembersToGroups import ad_add_members_to_groups as addUserToGroups
 from prettytable import PrettyTable
@@ -146,10 +147,6 @@ class dcDumlu():
 
         elif self.operation == "checkConnection":
             self.checkConnection(c)
-
-        elif self.operation == "exit":
-            print('[*] Exiting...')
-            sys.exit(0)
 
         else:
             print('[-] Invalid operation name!')
@@ -709,7 +706,7 @@ class dcDumlu():
 count = 0
 while True:
     try:
-        # to avoid exiting after an error
+        # to avoid exiting after an operation based error
         if count == 0:
             # print banner
             banner.dumlupinar()
@@ -743,6 +740,10 @@ while True:
         count += 1
         while (count > 0):
             operation = input(Style.BRIGHT + username + '@' + domainName + ':~$ ' + Style.RESET_ALL)
+            # to exit an error loop
+            if operation == "exit":
+                print('[*] Exiting...')
+                sys.exit(0)
             dumlupinar = dcDumlu(server, domainName, username, password, operation, searchBaseName)
             dumlupinar.main()
 
@@ -750,6 +751,10 @@ while True:
         print('\n[-] Exiting...')
         sys.exit(0)
 
-    except Exception as e:
-        print('[-] ' + str(e))
+    except socket.error as err:
+        print('[-] Connection error, check that the target server is up or your network connection: ' + str(err))
+        sys.exit(1)
+
+    except Exception as err:
+        print('[-] ' + str(err))
         continue
