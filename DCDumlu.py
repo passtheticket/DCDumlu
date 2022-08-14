@@ -152,7 +152,6 @@ class dcDumlu():
             print('[-] Invalid operation name!')
             print('[!] Use exit or help to list commands!')
 
-
     def getDomainSid(self, c):
         c.search(search_base=self.searchBaseName, search_filter='(objectClass=domain)', attributes=['dc', 'objectSid'])
         table = PrettyTable(['Domain Name', 'sid'])
@@ -249,11 +248,18 @@ class dcDumlu():
         for entry in entry_generator:
             if 'dn' in entry:
                 memberOfs = entry['attributes']['memberOf']
-                for memberOf in memberOfs:
+                if len(memberOfs) > 0:
+                    for memberOf in memberOfs:
+                        table.add_row([entry['attributes']['sAMAccountName'], entry['attributes']['userAccountControl'],
+                                       entry['attributes']['servicePrincipalName'], entry['attributes']['logonCount'],
+                                       entry['attributes']['adminCount'], entry['attributes']['distinguishedName'],
+                                       memberOf])
+                else:
                     table.add_row([entry['attributes']['sAMAccountName'], entry['attributes']['userAccountControl'],
                                    entry['attributes']['servicePrincipalName'], entry['attributes']['logonCount'],
                                    entry['attributes']['adminCount'], entry['attributes']['distinguishedName'],
-                                   memberOf])
+                                   '[]'])
+
                 total_entries += 1
         if total_entries > 0:
             print(table)
@@ -652,7 +658,9 @@ class dcDumlu():
             print('[!] ' + str(c.result))
 
     def checkConnection(self, c):
-        print('[*] ' + str(c))
+        table = PrettyTable(['Connection Details'])
+        table.add_row([str(c)])
+        print(table)
 
     def resetObject(self, c, objDn):
         # for restoring userAccountControl value of object that has been modified
