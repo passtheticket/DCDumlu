@@ -166,18 +166,18 @@ class dcDumlu():
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
                                                          search_filter='(objectCategory=Computer)',
                                                          search_scope=SUBTREE,
-                                                         attributes=['cn', 'operatingSystem', 'logonCount',
+                                                         attributes=['cn', 'operatingSystem', 'operatingSystemVersion', 'logonCount',
                                                                      'lastLogon'],
                                                          paged_size=None,
                                                          generator=True)
 
         print("[*] Computers of " + self.domainName + " domain: \n")
-        table = PrettyTable(['Computer Name', 'Operating System', 'Logon Count', 'Last Logon Time'])
+        table = PrettyTable(['Computer Name', 'Operating System',  'Version', 'Logon Count', 'Last Logon Time'])
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
                 table.add_row([entry['attributes']['cn'], entry['attributes']['operatingSystem'],
-                               entry['attributes']['logonCount'], entry['attributes']['lastLogon']])
+                               entry['attributes']['operatingSystemVersion'], entry['attributes']['logonCount'], entry['attributes']['lastLogon']])
                 total_entries += 1
         if total_entries > 0:
             print(table)
@@ -192,16 +192,16 @@ class dcDumlu():
                                                          search_filter='(&(objectCategory=person)(objectClass=user))',
                                                          search_scope=SUBTREE,
                                                          attributes=['cn', 'sAMAccountName', 'userAccountControl',
-                                                                     'logonCount', 'adminCount'])
+                                                                     'logonCount', 'adminCount', 'lastLogon'])
 
         print("[*] Users of " + self.domainName + " domain: \n")
-        table = PrettyTable(['Username', 'samAccountName', 'userAccountControl', 'Logon Count', 'Admin Count'])
+        table = PrettyTable(['Username', 'samAccountName', 'userAccountControl', 'Logon Count', 'Admin Count', 'Last Logon Time'])
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
                 table.add_row([entry['attributes']['cn'], entry['attributes']['sAMAccountName'],
                                entry['attributes']['userAccountControl'], entry['attributes']['logonCount'],
-                               entry['attributes']['adminCount']])
+                               entry['attributes']['adminCount'], entry['attributes']['lastLogon']])
                 total_entries += 1
         if total_entries > 0:
             print(table)
@@ -215,14 +215,14 @@ class dcDumlu():
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
                                                          search_filter='(objectCategory=group)',
                                                          search_scope=SUBTREE,
-                                                         attributes=['cn', 'distinguishedName'])
+                                                         attributes=['cn', 'distinguishedName', 'objectSid'])
 
         print("[*] Groups of " + self.domainName + " domain: \n")
-        table = PrettyTable(['Name', 'Distinguished Name'])
+        table = PrettyTable(['Name', 'Distinguished Name', 'Object SID'])
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
-                table.add_row([entry['attributes']['cn'], entry['attributes']['distinguishedName']])
+                table.add_row([entry['attributes']['cn'], entry['attributes']['distinguishedName'], entry['attributes']['objectSid']])
                 total_entries += 1
         if total_entries > 0:
             print(table)
