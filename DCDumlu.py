@@ -315,10 +315,24 @@ class dcDumlu():
             if 'dn' in entry:
                 memberOfs = entry['attributes']['memberOf']
                 members = entry['attributes']['member']
-                for memberOf in memberOfs:
-                    for member in members:
-                        table.add_row([entry['attributes']['cn'], member, memberOf])
+                if len(memberOfs) > 0:
+                    for memberOf in memberOfs:
+                        if len(members) > 0:
+                            for member in members:
+                                table.add_row([entry['attributes']['cn'], member, memberOf])
+                                total_entries += 1
+                        else:
+                            table.add_row(entry['attributes']['cn'], '[]', memberOf)
+                            total_entries += 1
+                else:
+                    if len(members) > 0:
+                        for member in members:
+                            table.add_row([entry['attributes']['cn'], member, '[]'])
+                            total_entries += 1
+                    else:
+                        table.add_row([entry['attributes']['cn'], '[]', '[]'])
                         total_entries += 1
+
         if total_entries > 0:
             print(table)
             print('[+] Count of searched groups: ', total_entries)
