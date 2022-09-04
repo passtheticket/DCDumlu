@@ -154,7 +154,7 @@ class dcDumlu():
 
     def getDomainSid(self, c):
         c.search(search_base=self.searchBaseName, search_filter='(objectClass=domain)', attributes=['dc', 'objectSid'])
-        table = PrettyTable(['Domain Name', 'sid'])
+        table = PrettyTable(['Domain Name', 'SID'])
         table.align = "l"
         table.add_row([c.entries[0].dc, c.entries[0].objectSid])
         print(table)
@@ -238,27 +238,29 @@ class dcDumlu():
                                                          search_scope=SUBTREE,
                                                          attributes=['sAMAccountName', 'userAccountControl',
                                                                      'servicePrincipalName', 'logonCount', 'adminCount',
-                                                                     'distinguishedName', 'memberOf'])
+                                                                     'distinguishedName', 'memberOf', 'objectSid', 'pwdLastSet'])
 
         print("[*] Users of " + self.domainName + " domain: \n")
         table = PrettyTable(
             ['samAccountName', 'userAccountControl', 'servicePrincipalName', 'Logon Count', 'Admin Count',
-             'Distinguished Name', 'Member Of'])
+             'Distinguished Name', 'Member Of', 'SID', 'Password Last Set'])
+        table._max_width = {"Distinguished Name": 50, "Member Of": 50}
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
                 memberOfs = entry['attributes']['memberOf']
+                time = str(entry['attributes']['pwdLastSet']).split()
                 if len(memberOfs) > 0:
                     for memberOf in memberOfs:
                         table.add_row([entry['attributes']['sAMAccountName'], entry['attributes']['userAccountControl'],
                                        entry['attributes']['servicePrincipalName'], entry['attributes']['logonCount'],
                                        entry['attributes']['adminCount'], entry['attributes']['distinguishedName'],
-                                       memberOf])
+                                       memberOf, entry['attributes']['objectSid'], time[0]])
                 else:
                     table.add_row([entry['attributes']['sAMAccountName'], entry['attributes']['userAccountControl'],
                                    entry['attributes']['servicePrincipalName'], entry['attributes']['logonCount'],
                                    entry['attributes']['adminCount'], entry['attributes']['distinguishedName'],
-                                   '[]'])
+                                   '[]', entry['attributes']['objectSid'], time[0]])
 
                 total_entries += 1
         if total_entries > 0:
