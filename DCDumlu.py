@@ -192,16 +192,18 @@ class dcDumlu():
                                                          search_filter='(&(objectCategory=person)(objectClass=user))',
                                                          search_scope=SUBTREE,
                                                          attributes=['cn', 'sAMAccountName', 'userAccountControl',
-                                                                     'logonCount', 'adminCount', 'lastLogon'])
+                                                                     'logonCount', 'adminCount', 'lastLogon', 'pwdLastSet'])
 
         print("[*] Users of " + self.domainName + " domain: \n")
-        table = PrettyTable(['Username', 'samAccountName', 'userAccountControl', 'Logon Count', 'Admin Count', 'Last Logon Time'])
+        table = PrettyTable(['Username', 'samAccountName', 'userAccountControl', 'Logon Count', 'Admin Count', 'Last Logon Time', 'Password Last Set'])
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
+                pwdLastTime = str(entry['attributes']['pwdLastSet']).split()
+                lastLogonTime = str(entry['attributes']['lastLogon']).split(".")
                 table.add_row([entry['attributes']['cn'], entry['attributes']['sAMAccountName'],
                                entry['attributes']['userAccountControl'], entry['attributes']['logonCount'],
-                               entry['attributes']['adminCount'], entry['attributes']['lastLogon']])
+                               entry['attributes']['adminCount'], lastLogonTime[0], pwdLastTime[0]])
                 total_entries += 1
         if total_entries > 0:
             print(table)
@@ -215,14 +217,15 @@ class dcDumlu():
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
                                                          search_filter='(objectCategory=group)',
                                                          search_scope=SUBTREE,
-                                                         attributes=['cn', 'distinguishedName', 'objectSid'])
+                                                         attributes=['cn', 'distinguishedName', 'objectSid', 'description'])
 
         print("[*] Groups of " + self.domainName + " domain: \n")
-        table = PrettyTable(['Name', 'Distinguished Name', 'Object SID'])
+        table = PrettyTable(['Name', 'Distinguished Name', 'Object SID', 'Description'])
+        table._max_width = {"Distinguished Name": 70, "description": 70}
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
-                table.add_row([entry['attributes']['cn'], entry['attributes']['distinguishedName'], entry['attributes']['objectSid']])
+                table.add_row([entry['attributes']['cn'], entry['attributes']['distinguishedName'], entry['attributes']['objectSid'], entry['attributes']['description']])
                 total_entries += 1
         if total_entries > 0:
             print(table)
@@ -238,29 +241,29 @@ class dcDumlu():
                                                          search_scope=SUBTREE,
                                                          attributes=['sAMAccountName', 'userAccountControl',
                                                                      'servicePrincipalName', 'logonCount', 'adminCount',
-                                                                     'distinguishedName', 'memberOf', 'objectSid', 'pwdLastSet'])
+                                                                     'distinguishedName', 'memberOf', 'objectSid', 'lastLogon'])
 
         print("[*] Users of " + self.domainName + " domain: \n")
         table = PrettyTable(
             ['samAccountName', 'userAccountControl', 'servicePrincipalName', 'Logon Count', 'Admin Count',
-             'Distinguished Name', 'Member Of', 'SID', 'Password Last Set'])
-        table._max_width = {"Distinguished Name": 50, "Member Of": 50}
+             'Distinguished Name', 'Member Of', 'SID', 'Last Logon Time'])
+        table._max_width = {"servicePrincipalName": 30, "Distinguished Name": 45, "Member Of": 45}
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
                 memberOfs = entry['attributes']['memberOf']
-                time = str(entry['attributes']['pwdLastSet']).split()
+                lastLogonTime = str(entry['attributes']['lastLogon']).split(".")
                 if len(memberOfs) > 0:
                     for memberOf in memberOfs:
                         table.add_row([entry['attributes']['sAMAccountName'], entry['attributes']['userAccountControl'],
                                        entry['attributes']['servicePrincipalName'], entry['attributes']['logonCount'],
                                        entry['attributes']['adminCount'], entry['attributes']['distinguishedName'],
-                                       memberOf, entry['attributes']['objectSid'], time[0]])
+                                       memberOf, entry['attributes']['objectSid'], lastLogonTime[0]])
                 else:
                     table.add_row([entry['attributes']['sAMAccountName'], entry['attributes']['userAccountControl'],
                                    entry['attributes']['servicePrincipalName'], entry['attributes']['logonCount'],
                                    entry['attributes']['adminCount'], entry['attributes']['distinguishedName'],
-                                   '[]', entry['attributes']['objectSid'], time[0]])
+                                   '[]', entry['attributes']['objectSid'], lastLogonTime[0]])
 
                 total_entries += 1
         if total_entries > 0:
@@ -275,21 +278,23 @@ class dcDumlu():
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
                                                          search_filter='(&(objectCategory=Computer)(cn=*' + sHost + '*))',
                                                          search_scope=SUBTREE,
-                                                         attributes=['distinguishedName', 'operatingSystem',
+                                                         attributes=['cn', 'distinguishedName', 'operatingSystem', 'operatingSystemVersion',
                                                                      'userAccountControl', 'logonCount', 'lastLogon',
-                                                                     'servicePrincipalName'],
+                                                                     'servicePrincipalName', 'objectSid'],
                                                          paged_size=None,
                                                          generator=True)
 
         print("[*] Computers of " + self.domainName + " domain: \n")
         table = PrettyTable(
-            ['Distinguished Name', 'Operating System', 'userAccountControl', 'Logon Count', 'Last Logon Time'])
+            ['Computer Name', 'Distinguished Name', 'Operating System', 'Version', 'userAccountControl', 'servicePrincipalName', 'Logon Count', 'SID', 'Last Logon Time'])
+        table._max_width = {"servicePrincipalName": 40, "Distinguished Name": 40, "Operating System": 25}
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
-                table.add_row([entry['attributes']['distinguishedName'], entry['attributes']['operatingSystem'],
-                               entry['attributes']['userAccountControl'], entry['attributes']['logonCount'],
-                               entry['attributes']['lastLogon']])
+                lastLogonTime = str(entry['attributes']['lastLogon']).split(".")
+                table.add_row([entry['attributes']['cn'], entry['attributes']['distinguishedName'], entry['attributes']['operatingSystem'],
+                               entry['attributes']['operatingSystemVersion'], entry['attributes']['userAccountControl'], entry['attributes']['servicePrincipalName'],
+                               entry['attributes']['logonCount'], entry['attributes']['objectSid'], lastLogonTime[0]])
                 total_entries += 1
         if total_entries > 0:
             print(table)
@@ -306,12 +311,13 @@ class dcDumlu():
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
                                                          search_filter='(&(objectCategory=group)(cn=*' + gName + '*))',
                                                          search_scope=SUBTREE,
-                                                         attributes=['cn', 'member', 'memberOf'],
+                                                         attributes=['cn', 'member', 'memberOf', 'adminCount'],
                                                          paged_size=None,
                                                          generator=True)
 
         print("[*] Groups of " + self.domainName + " domain: \n")
-        table = PrettyTable(['Name', 'Member', 'Member Of'])
+        table = PrettyTable(['Name', 'Member', 'Member Of', 'Admin Count'])
+        table._max_width = {"Member": 70, "Member Of": 70}
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
@@ -321,18 +327,18 @@ class dcDumlu():
                     for memberOf in memberOfs:
                         if len(members) > 0:
                             for member in members:
-                                table.add_row([entry['attributes']['cn'], member, memberOf])
+                                table.add_row([entry['attributes']['cn'], member, memberOf, entry['attributes']['adminCount']])
                                 total_entries += 1
                         else:
-                            table.add_row(entry['attributes']['cn'], '[]', memberOf)
+                            table.add_row(entry['attributes']['cn'], '[]', memberOf, entry['attributes']['adminCount'])
                             total_entries += 1
                 else:
                     if len(members) > 0:
                         for member in members:
-                            table.add_row([entry['attributes']['cn'], member, '[]'])
+                            table.add_row([entry['attributes']['cn'], member, '[]', entry['attributes']['adminCount']])
                             total_entries += 1
                     else:
-                        table.add_row([entry['attributes']['cn'], '[]', '[]'])
+                        table.add_row([entry['attributes']['cn'], '[]', '[]', entry['attributes']['adminCount']])
                         total_entries += 1
 
         if total_entries > 0:
@@ -351,6 +357,7 @@ class dcDumlu():
 
         print("[*] Users of " + self.domainName + " domain: \n")
         table = PrettyTable(['Username', 'samAccountName', 'Description'])
+        table._max_width = {"Description": 70}
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
@@ -375,6 +382,7 @@ class dcDumlu():
 
         print("[*] Computers of " + self.domainName + " domain: \n")
         table = PrettyTable(['Computer Name', 'Description'])
+        table._max_width = {"Description": 70}
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
@@ -758,6 +766,10 @@ while True:
                 print("[-] Unexpected domain name!")
                 sys.exit(1)
 
+            if not server:
+                print("[-] IP address of DC is required!")
+                continue
+
             if not password or not username:
                 print("[-] Password/NT Hash or username is required!")
                 continue
@@ -777,7 +789,7 @@ while True:
 
     except socket.error as err:
         print('[-] Connection error, check that the target server is up or your network connection: ' + str(err))
-        sys.exit(1)
+        continue
 
     except Exception as err:
         print('[-] ' + str(err))
