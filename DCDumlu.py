@@ -789,8 +789,10 @@ while True:
 
     except socket.error as err:
         print('[-] Connection error, check that the target server is up or your network connection: ' + str(err))
+        print('[!] For exiting the script, please type exit or press ctrl+c')
         continue
 
     except Exception as err:
         print('[-] ' + str(err))
+        print('[!] For exiting the script, please type exit or press ctrl+c')
         continue
