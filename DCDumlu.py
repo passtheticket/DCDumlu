@@ -40,8 +40,8 @@ class dcDumlu():
         else:
             print('[+] Connection established...')
 
-        if self.operation == "getDomainSid":
-            self.getDomainSid(c)
+        if self.operation == "getDomainInfo":
+            self.getDomainInfo(c)
 
         elif self.operation == "getHosts":
             self.enumHosts(c)
@@ -152,11 +152,11 @@ class dcDumlu():
             print('[-] Invalid operation name!')
             print('[!] Use exit or help to list commands!')
 
-    def getDomainSid(self, c):
-        c.search(search_base=self.searchBaseName, search_filter='(objectClass=domain)', attributes=['dc', 'objectSid'])
-        table = PrettyTable(['Domain Name', 'SID'])
+    def getDomainInfo(self, c):
+        c.search(search_base=self.searchBaseName, search_filter='(objectClass=domain)', attributes=ALL_ATTRIBUTES)
+        table = PrettyTable(['Domain Name', 'DN', 'SID', 'ms-DS-MachineAccountQuota', 'Domain Created Time'])
         table.align = "l"
-        table.add_row([c.entries[0].dc, c.entries[0].objectSid])
+        table.add_row([c.entries[0]['dc'], c.entries[0]['distinguishedName'], c.entries[0]['objectSid'], c.entries[0]['ms-DS-MachineAccountQuota'], c.entries[0]['whenCreated']])
         print(table)
 
     def enumHosts(self, c):
