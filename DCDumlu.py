@@ -4,7 +4,7 @@ import getpass
 import sys
 
 import socket
-from ldap3 import Server, Connection, ALL, NTLM, SUBTREE, MODIFY_REPLACE, MODIFY_ADD, MODIFY_DELETE
+from ldap3 import Server, Connection, ALL, NTLM, SUBTREE, MODIFY_REPLACE, MODIFY_ADD, MODIFY_DELETE, ALL_ATTRIBUTES
 from ldap3.extend.microsoft.addMembersToGroups import ad_add_members_to_groups as addUserToGroups
 from prettytable import PrettyTable
 from colorama import Style
