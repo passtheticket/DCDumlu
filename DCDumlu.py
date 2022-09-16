@@ -246,24 +246,25 @@ class dcDumlu():
         print("[*] Users of " + self.domainName + " domain: \n")
         table = PrettyTable(
             ['samAccountName', 'userAccountControl', 'servicePrincipalName', 'Logon Count', 'Admin Count',
-             'Distinguished Name', 'Member Of', 'SID', 'Last Logon Time'])
+             'Distinguished Name', 'Member Of', 'RID', 'Last Logon Time'])
         table._max_width = {"servicePrincipalName": 30, "Distinguished Name": 45, "Member Of": 45}
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
                 memberOfs = entry['attributes']['memberOf']
-                lastLogonTime = str(entry['attributes']['lastLogon']).split(".")
+                lastLogonTime = str(entry['attributes']['lastLogon']).split()
+                rid = str(entry['attributes']['objectSid']).split('-')
                 if len(memberOfs) > 0:
                     for memberOf in memberOfs:
                         table.add_row([entry['attributes']['sAMAccountName'], entry['attributes']['userAccountControl'],
                                        entry['attributes']['servicePrincipalName'], entry['attributes']['logonCount'],
                                        entry['attributes']['adminCount'], entry['attributes']['distinguishedName'],
-                                       memberOf, entry['attributes']['objectSid'], lastLogonTime[0]])
+                                       memberOf, rid[7], lastLogonTime[0]])
                 else:
                     table.add_row([entry['attributes']['sAMAccountName'], entry['attributes']['userAccountControl'],
                                    entry['attributes']['servicePrincipalName'], entry['attributes']['logonCount'],
                                    entry['attributes']['adminCount'], entry['attributes']['distinguishedName'],
-                                   '[]', entry['attributes']['objectSid'], lastLogonTime[0]])
+                                   '[]', rid[7], lastLogonTime[0]])
 
                 total_entries += 1
         if total_entries > 0:
