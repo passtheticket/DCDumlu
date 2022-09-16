@@ -287,15 +287,16 @@ class dcDumlu():
 
         print("[*] Computers of " + self.domainName + " domain: \n")
         table = PrettyTable(
-            ['Computer Name', 'Distinguished Name', 'Operating System', 'Version', 'userAccountControl', 'servicePrincipalName', 'Logon Count', 'SID', 'Last Logon Time'])
+            ['Computer Name', 'Distinguished Name', 'Operating System', 'Version', 'userAccountControl', 'servicePrincipalName', 'Logon Count', 'RID', 'Last Logon Time'])
         table._max_width = {"servicePrincipalName": 40, "Distinguished Name": 40, "Operating System": 25}
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
                 lastLogonTime = str(entry['attributes']['lastLogon']).split(".")
+                rid = str(entry['attributes']['objectSid']).split('-')
                 table.add_row([entry['attributes']['cn'], entry['attributes']['distinguishedName'], entry['attributes']['operatingSystem'],
                                entry['attributes']['operatingSystemVersion'], entry['attributes']['userAccountControl'], entry['attributes']['servicePrincipalName'],
-                               entry['attributes']['logonCount'], entry['attributes']['objectSid'], lastLogonTime[0]])
+                               entry['attributes']['logonCount'], rid[7], lastLogonTime[0]])
                 total_entries += 1
         if total_entries > 0:
             print(table)
