@@ -42,6 +42,9 @@ class dcDumlu():
 
         if self.operation == "getDomainInfo":
             self.getDomainInfo(c)
+        
+        elif self.operation == "getPasswordPolicy":
+            self.getPasswordPolicy(c)            
 
         elif self.operation == "getHosts":
             self.enumHosts(c)
@@ -158,6 +161,17 @@ class dcDumlu():
         table.align = "l"
         table.add_row([c.entries[0]['dc'], c.entries[0]['distinguishedName'], c.entries[0]['objectSid'], c.entries[0]['ms-DS-MachineAccountQuota'], c.entries[0]['whenCreated']])
         print(table)
+
+    def getPasswordPolicy(self, c):
+        c.search(search_base=self.searchBaseName, search_filter='(objectClass=domain)', attributes=ALL_ATTRIBUTES)
+        columnLayout = ['Policy', 'Policy Setting']
+        table = PrettyTable()
+        table.add_column(columnLayout[0], ['Minimum password age (days)', 'Maximum password age (days)', 'Minimum password length', 'Length of password history maintained',
+                             'Lockout threshold', 'Lockout duration (minutes)', 'Lockout observation window (minutes)'])
+        table.add_column(columnLayout[1], [c.entries[0]['minPwdAge'], c.entries[0]['maxPwdAge'], c.entries[0]['minPwdLength'], c.entries[0]['pwdHistoryLength'], c.entries[0]['lockoutThreshold'],
+                       c.entries[0]['lockoutDuration'], c.entries[0]['lockOutObservationWindow']])
+        table.align = "l"
+        print(table)        
 
     def enumHosts(self, c):
         # enum all hosts
