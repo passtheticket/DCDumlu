@@ -17,7 +17,8 @@ Then provide `IP address of DC`, `Domain name`, `Username`, `Password or NT hash
 ## Usage
 Commands | Descriptions
 ------------ | -------------
-getDomainSid | Get domain SID
+getDomainInfo | Get domain SID, name and MAQ
+getPasswordPolicy | Get password policy
 getHosts | Dump hosts information
 getUsers | Dump users information
 getGroups | Dump groups information
