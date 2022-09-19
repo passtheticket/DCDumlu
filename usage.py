@@ -3,7 +3,8 @@ from prettytable import PrettyTable
 def Helper():
     helpTable = PrettyTable(["Commands", "Descriptions"])
     helpTable.align = "l"
-    helpTable.add_row(["getDomainSid", "Get domain SID"])
+    helpTable.add_row(["getDomainInfo", "Get domain SID, name and MAQ"])
+    helpTable.add_row(["getPasswordPolicy", "Get password policy"])
     helpTable.add_row(["getHosts","Dump hosts information"])
     helpTable.add_row(["getUsers", "Dump users information"])
     helpTable.add_row(["getGroups", "Dump groups information"])
