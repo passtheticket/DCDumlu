@@ -9,6 +9,7 @@ from ldap3.extend.microsoft.addMembersToGroups import ad_add_members_to_groups a
 from prettytable import PrettyTable
 from colorama import Style
 
+import convertsid
 import banner
 import uactable
 import usage
@@ -44,7 +45,10 @@ class dcDumlu():
             self.getDomainInfo(c)
         
         elif self.operation == "getPasswordPolicy":
-            self.getPasswordPolicy(c)            
+            self.getPasswordPolicy(c)
+            
+        elif self.operation == "getTrustInfo":
+            self.getTrustInfo(c)
 
         elif self.operation == "getHosts":
             self.enumHosts(c)
@@ -173,6 +177,38 @@ class dcDumlu():
         table.align = "l"
         print(table)        
 
+    def getTrustInfo(self, c):
+        total_entries = 0
+        entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName, search_filter='(objectClass=trustedDomain)', attributes=ALL_ATTRIBUTES, generator=True)
+        table = PrettyTable(['Domain Name', 'Domain NetBios Name', 'SID', 'Trust Direction', 'When Created'])
+        table.align = "l"
+        for entry in entry_generator:
+            if 'dn' in entry:
+                createdTime = str(entry['attributes']['whenCreated']).split("+")[0]
+                #converting sid value
+                byteSid = entry['attributes']['securityIdentifier']
+                sid = convertsid.sid_to_str(byteSid)
+                #converting trustdirection
+                trustValue = entry['attributes']['trustDirection']
+                if trustValue == 3:
+                    trustDirection = 'Bidirectional'
+                elif trustValue == 2:
+                    trustDirection = 'Outbound'
+                elif trustValue == 1:
+                    trustDirection = 'Inbound'
+                elif trustValue == 0:
+                    trustDirection = 'Disabled'
+                else:
+                    trustDirection = '[]'
+
+                table.add_row([entry['attributes']['trustPartner'], entry['attributes']['flatName'], sid, trustDirection, createdTime])
+                total_entries += 1
+        if total_entries > 0:
+                print(table)
+                print('[+] Count of trust: ', total_entries)
+        else:
+            print('[-] Trust relationship is not defined!')        
+            
     def enumHosts(self, c):
         # enum all hosts
         # domain controller: search_filter='(&(objectCategory=Computer)(userAccountControl:1.2.840.113556.1.4.803:=8192))'
