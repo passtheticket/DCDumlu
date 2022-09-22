@@ -5,6 +5,7 @@ def Helper():
     helpTable.align = "l"
     helpTable.add_row(["getDomainInfo", "Get domain SID, name and MAQ"])
     helpTable.add_row(["getPasswordPolicy", "Get password policy"])
+    helpTable.add_row(["getTrustInfo", "Get trust relationship information"])
     helpTable.add_row(["getHosts","Dump hosts information"])
     helpTable.add_row(["getUsers", "Dump users information"])
     helpTable.add_row(["getGroups", "Dump groups information"])
