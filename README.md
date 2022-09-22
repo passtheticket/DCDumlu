@@ -19,6 +19,7 @@ Commands | Descriptions
 ------------ | -------------
 getDomainInfo | Get domain SID, name and MAQ
 getPasswordPolicy | Get password policy
+getTrustInfo | Get trust relationship information
 getHosts | Dump hosts information
 getUsers | Dump users information
 getGroups | Dump groups information
