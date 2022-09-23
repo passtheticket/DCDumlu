@@ -64,6 +64,9 @@ class dcDumlu():
 
         elif self.operation == "hostDescriptions":
             self.hostsDescription(c)
+           
+        elif self.operation == "getPasswordNotRequired":
+            self.getPasswordNotRequired(c)        
 
         elif self.operation == "getGroupMembers":
             gName = input('[*] Group Name: ')
@@ -449,6 +452,34 @@ class dcDumlu():
         else:
             print('[-] Not found!')
 
+    def getPasswordNotRequired(self, c):
+        # All users not required to have a password. (All possible users that don't have a password.)
+        # If a password is set later for the user, the UAC value is not changed. Hence, this LDAP query can return a user that is set a password.
+        total_entries = 0
+        entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
+                                                         search_filter='(&(objectCategory=person)(objectClass=user)(userAccountControl:1.2.840.113556.1.4.803:=32))',
+                                                         search_scope=SUBTREE,
+                                                         attributes=['sAMAccountName', 'memberOf', 'distinguishedName', 'description'])
+
+        print("[*] All users not required to have a password: \n")
+        table = PrettyTable(['sAMAccountName', 'Member Of', 'DN', 'Description'])
+        table._max_width = {"Member Of": 80, "DN": 80, "Description": 60}
+        table.align = "l"
+        for entry in entry_generator:
+            if 'dn' in entry:
+                memberOfs = entry['attributes']['memberOf']
+                if len(memberOfs) > 0:
+                    for memberOf in memberOfs:
+                        table.add_row([entry['attributes']['sAMAccountName'], memberOf, entry['attributes']['distinguishedName'], entry['attributes']['description']])
+                else:
+                    table.add_row([entry['attributes']['sAMAccountName'], '[]', entry['attributes']['distinguishedName'], entry['attributes']['description'],])
+                total_entries += 1
+        if total_entries > 0:
+            print(table)
+            print('[+] Count of searched domain users: ', total_entries)
+        else:
+            print('[-] Not found')
+            
     def hostsUnconstrained(self, c):
         # domain controller: search_filter='(&(objectCategory=Computer)(userAccountControl:1.2.840.113556.1.4.803:=524288))'
         total_entries = 0
