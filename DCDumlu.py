@@ -627,7 +627,7 @@ class dcDumlu():
             print(table)
             print('[+] Count of SPNs: ', total_entries)
         else:
-            print('[-] Not found!')
+            print('[-] Not found Kerberoastable user!')
 
     def setSpn(self, c, setSpnDn, spnName):
         c.modify(setSpnDn, {'servicePrincipalName': [(MODIFY_ADD, [spnName])]})
