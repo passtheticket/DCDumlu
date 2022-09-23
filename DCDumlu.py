@@ -131,7 +131,7 @@ class dcDumlu():
         elif self.operation == "addAsRepRoasting":
             print('[*] Example DN: cn=unsafe inline,cn=Users,' + self.searchBaseName)
             asRepDn = input('[*] Distinguished Name: ')
-            self.addAsRep(c, asRepDn)    
+            self.addAsRep(c, asRepDn)
 
         elif self.operation == "delAsRepRoasting":
             print('[*] Example DN: cn=unsafe inline,cn=Users,' + self.searchBaseName)
@@ -810,7 +810,7 @@ class dcDumlu():
                     table.add_row([dName, newUserAccountControl])
                     print(table)
                 else:
-                     print('[-] Something went wrong!')
+                    print('[-] Something went wrong!')
                     print('[!] ' + str(c.result))
         else:
             print('[!] To change value of userAccountControl you must specify one user/computer account!')
