@@ -125,8 +125,8 @@ class dcDumlu():
             constrainedHostName = input('[*] Computer name for searching services that will be added: ')
             self.addConstrained(c, constrainedDn, constrainedHostName)
 
-        elif self.operation == "getAsrep":
-            self.getAsrep(c)            
+        elif self.operation == "getAsRep":
+            self.getAsRep(c)            
             
         elif self.operation == "addAsRepRoasting":
             print('[*] Example DN: cn=unsafe inline,cn=Users,' + self.searchBaseName)
@@ -710,7 +710,7 @@ class dcDumlu():
         else:
             print('[-] Computer account was not found!')
 
-    def getAsrep(self, c):
+    def getAsRep(self, c):
         # Getting all users for the ASREProasting attack.
         total_entries = 0
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
