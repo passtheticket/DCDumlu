@@ -125,10 +125,13 @@ class dcDumlu():
             constrainedHostName = input('[*] Computer name for searching services that will be added: ')
             self.addConstrained(c, constrainedDn, constrainedHostName)
 
+        elif self.operation == "getAsrep":
+            self.getAsrep(c)            
+            
         elif self.operation == "addAsRepRoasting":
             print('[*] Example DN: cn=unsafe inline,cn=Users,' + self.searchBaseName)
             asRepDn = input('[*] Distinguished Name: ')
-            self.addAsRep(c, asRepDn)
+            self.addAsRep(c, asRepDn)    
 
         elif self.operation == "delAsRepRoasting":
             print('[*] Example DN: cn=unsafe inline,cn=Users,' + self.searchBaseName)
@@ -707,6 +710,32 @@ class dcDumlu():
         else:
             print('[-] Computer account was not found!')
 
+    def getAsrep(self, c):
+        # Getting all users for the ASREProasting attack.
+        total_entries = 0
+        entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
+                                                         search_filter='(&(objectCategory=person)(objectClass=user)(userAccountControl:1.2.840.113556.1.4.803:=4194304))',
+                                                         search_scope=SUBTREE,
+                                                         attributes=['cn', 'sAMAccountName', 'memberOf', 'distinguishedName'])
+
+        table = PrettyTable(['Name', 'sAMAccountName', 'Member Of', 'DN'])
+        table._max_width = {"Member Of": 80, "DN": 80}
+        table.align = "l"
+        for entry in entry_generator:
+            if 'dn' in entry:
+                memberOfs = entry['attributes']['memberOf']
+                if len(memberOfs) > 0:
+                    for memberOf in memberOfs:
+                        table.add_row([entry['attributes']['cn'], entry['attributes']['sAMAccountName'], memberOf, entry['attributes']['distinguishedName']])
+                else:
+                    table.add_row([entry['attributes']['cn'], entry['attributes']['sAMAccountName'], '[]', entry['attributes']['distinguishedName']])
+                total_entries += 1
+        if total_entries > 0:
+            print(table)
+            print('[+] Count of searched domain users: ', total_entries)
+        else:
+            print('[-] Not found ASREProastable user!')
+            
     def addAsRep(self, c, asRepDn):
         # userAccountControl 4194304 DONT_REQ_PREAUTH
         # userAccountControl 512 NORMAL_ACCOUNT
@@ -781,7 +810,7 @@ class dcDumlu():
                     table.add_row([dName, newUserAccountControl])
                     print(table)
                 else:
-                    print('[-] Something went wrong!')
+                     print('[-] Something went wrong!')
                     print('[!] ' + str(c.result))
         else:
             print('[!] To change value of userAccountControl you must specify one user/computer account!')
