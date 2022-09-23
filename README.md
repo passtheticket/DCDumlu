@@ -35,11 +35,12 @@ unconstrainedUser | Enumerate unconstrained user account
 addUser | Add a user
 addUserToGroup | Add a user to group
 delUser | Delete a user
-getSpns | Getting all user SPNs
+getSpns | Getting all Kerberoastable users
 setSpn | Set a servicePrincipalName attribute value
 unSetSpn | Unset a servicePrincipalName attribute value
 addUnconstrained | Modify an object for delegation to any service with Kerberos Auth
 addConstrained | Modify an object for delegation to specific service
+getAsRep | Getting all Asreproastable users
 addAsRepRoasting | Set user option as do not require Kerberos preauthentication for As-Rep Roasting attack
 delAsRepRoasting | Set user option as Kerberos preauthentication is required
 resetObject | Change userAccountControl attribute of object to reset modifications that are related Kerberos delegation attacks
