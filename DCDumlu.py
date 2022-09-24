@@ -52,7 +52,10 @@ class dcDumlu():
 
         elif self.operation == "getHosts":
             self.enumHosts(c)
-
+           
+        elif self.operation == "getDCs":
+            self.getDomainControllers(c)
+        
         elif self.operation == "getUsers":
             self.enumUsers(c)
 
@@ -216,7 +219,7 @@ class dcDumlu():
             print('[-] Trust relationship is not defined!')        
             
     def enumHosts(self, c):
-        # enum all hosts
+        # enum all hosts without DCs
         # domain controller: search_filter='(&(objectCategory=Computer)(userAccountControl:1.2.840.113556.1.4.803:=8192))'
         total_entries = 0
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
@@ -240,6 +243,32 @@ class dcDumlu():
             print('[+] Count of computers: ', total_entries)
         else:
             print('[-] Not found!')
+            
+    def getDomainControllers(self, c):
+        # Get Domain Controllers
+        total_entries = 0
+        entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
+                                                         search_filter='(&(objectCategory=computer)(userAccountControl:1.2.840.113556.1.4.803:=8192))',
+                                                         search_scope=SUBTREE,
+                                                         attributes=['cn', 'dNSHostName', 'operatingSystem',
+                                                                     'operatingSystemVersion', 'distinguishedName'],
+                                                         paged_size=None,
+                                                         generator=True)
+
+        print("[*] Domain Controllers of " + self.domainName + " domain: \n")
+        table = PrettyTable(['Computer Name', 'Dns Name', 'Operating System', 'Version', 'DN'])
+        table.align = "l"
+        for entry in entry_generator:
+            if 'dn' in entry:
+                table.add_row([entry['attributes']['cn'], entry['attributes']['dNSHostName'],
+                               entry['attributes']['operatingSystem'], entry['attributes']['operatingSystemVersion'],
+                               entry['attributes']['distinguishedName']])
+                total_entries += 1
+        if total_entries > 0:
+            print(table)
+            print('[+] Count of DCs: ', total_entries)
+        else:
+            print('[-] Something went wrong!')            
 
     def enumUsers(self, c):
         # enum all users
