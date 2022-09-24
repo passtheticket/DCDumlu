@@ -8,6 +8,7 @@ def Helper():
     helpTable.add_row(["getPasswordNotRequired", "Get all users not required to have a password"])
     helpTable.add_row(["getTrustInfo", "Get trust relationship information"])
     helpTable.add_row(["getHosts","Dump hosts information"])
+    helpTable.add_row(["getDCs","Get Domain Controller(s) information"])
     helpTable.add_row(["getUsers", "Dump users information"])
     helpTable.add_row(["getGroups", "Dump groups information"])
     helpTable.add_row(["hostDescriptions", "Dump description of hosts information"])
