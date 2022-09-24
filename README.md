@@ -22,6 +22,7 @@ getPasswordPolicy | Get password policy
 getPasswordNotRequired | Get all users not required to have a password
 getTrustInfo | Get trust relationship information
 getHosts | Dump hosts information
+getDCs | Get Domain Controller(s) information
 getUsers | Dump users information
 getGroups | Dump groups information
 hostDescriptions | Dump description of hosts information
