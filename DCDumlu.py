@@ -488,20 +488,25 @@ class dcDumlu():
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
                                                          search_filter='(&(objectCategory=person)(objectClass=user)(userAccountControl:1.2.840.113556.1.4.803:=32))',
                                                          search_scope=SUBTREE,
-                                                         attributes=['sAMAccountName', 'memberOf', 'distinguishedName', 'description'])
+                                                         attributes=['sAMAccountName', 'memberOf', 'distinguishedName',
+                                                                     'description', 'userAccountControl'])
 
         print("[*] All users not required to have a password: \n")
-        table = PrettyTable(['sAMAccountName', 'Member Of', 'DN', 'Description'])
-        table._max_width = {"Member Of": 80, "DN": 80, "Description": 60}
+        table = PrettyTable(['sAMAccountName', 'Member Of', 'DN', 'Description', 'userAccountControl'])
+        table._max_width = {"Member Of": 70, "DN": 70, "Description": 60}
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
                 memberOfs = entry['attributes']['memberOf']
                 if len(memberOfs) > 0:
                     for memberOf in memberOfs:
-                        table.add_row([entry['attributes']['sAMAccountName'], memberOf, entry['attributes']['distinguishedName'], entry['attributes']['description']])
+                        table.add_row(
+                            [entry['attributes']['sAMAccountName'], memberOf, entry['attributes']['distinguishedName'],
+                             entry['attributes']['description'], entry['attributes']['userAccountControl']])
                 else:
-                    table.add_row([entry['attributes']['sAMAccountName'], '[]', entry['attributes']['distinguishedName'], entry['attributes']['description'],])
+                    table.add_row(
+                        [entry['attributes']['sAMAccountName'], '[]', entry['attributes']['distinguishedName'],
+                         entry['attributes']['description'], entry['attributes']['userAccountControl']])
                 total_entries += 1
         if total_entries > 0:
             print(table)
