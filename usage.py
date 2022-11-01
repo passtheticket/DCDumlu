@@ -20,6 +20,7 @@ def Helper():
     helpTable.add_row(["constrainedComputer", "Enumerate constrained computer account"])
     helpTable.add_row(["constrainedUser", "Enumerate constrained user account"])
     helpTable.add_row(["unconstrainedUser", "Enumerate unconstrained user account"])
+    helpTable.add_row(["getRbcd", "Enumerate resource-based constrained delegation configuration"])
     helpTable.add_row(["addUser", "Add a user"])
     helpTable.add_row(["addUserToGroup", "Add a user to group"])
     helpTable.add_row(["delUser", "Delete a user"])
@@ -38,3 +39,4 @@ def Helper():
     helpTable.add_row(["?", "Print usage"])
     helpTable.add_row(["exit", "Exit"])
     print(helpTable)
+
