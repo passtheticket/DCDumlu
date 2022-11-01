@@ -8,6 +8,7 @@ from ldap3 import Server, Connection, ALL, NTLM, SUBTREE, MODIFY_REPLACE, MODIFY
 from ldap3.extend.microsoft.addMembersToGroups import ad_add_members_to_groups as addUserToGroups
 from prettytable import PrettyTable
 from colorama import Style
+from impacket.ldap import ldaptypes
 
 import convertsid
 import banner
@@ -94,6 +95,9 @@ class dcDumlu():
 
         elif self.operation == "unconstrainedUser":
             self.userUnconstrained(c)
+
+        elif self.operation == "getRbcd":
+            self.getRbcd(c)
 
         elif self.operation == "addUser":
             givenName = input('[*] First Name: ')
@@ -628,6 +632,37 @@ class dcDumlu():
         else:
             print('[-] Not found!')
 
+    def getRbcd(self, c):
+        total_entries = 0
+        entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
+                                                         search_filter='(&(msDS-AllowedToActOnBehalfOfOtherIdentity=*)(|(objectCategory=computer)(objectCategory=person)))',
+                                                         search_scope=SUBTREE,
+                                                         attributes=ALL_ATTRIBUTES,
+                                                         paged_size=None,
+                                                         generator=True)
+
+        print("[*] Resource-based constrained delegation configuration for " + self.domainName + " domain: \n")
+        table = PrettyTable(['Resource Name', 'Accounts allowed to act on behalf of other identity', 'Accounts Distinguished Name'])
+        table._max_width = {"Accounts Distinguished Name": 80}
+        table.align = "l"
+        for entry in entry_generator:
+            if 'dn' in entry:
+                sd = ldaptypes.SR_SECURITY_DESCRIPTOR(
+                    data=entry['raw_attributes']['msDS-AllowedToActOnBehalfOfOtherIdentity'][0])
+                if len(sd['Dacl'].aces) > 0:
+                    for ace in sd['Dacl'].aces:
+                        sid = ace['Ace']['Sid'].formatCanonical()
+                        #sid to object name and distinguishedName
+                        objectName = self.sidToObjectName(c, sid)[1]
+                        dn = self.sidToObjectName(c, sid)[0]
+                        table.add_row([entry['attributes']['sAMAccountName'], objectName, dn])
+                        total_entries += 1
+        if total_entries > 0:
+            print(table)
+            print('[+] Count of accounts: ', total_entries)
+        else:
+            print('[-] Not found!')
+
     def addUser(self, c, givenName, sn, sAMAccountName):
         addUserDn = 'cn=' + givenName + ' ' + sn + ',cn=Users,' + self.searchBaseName
         c.add(addUserDn, 'inetOrgPerson', {'givenName': givenName, 'sn': sn, 'sAMAccountName': sAMAccountName,
@@ -831,6 +866,16 @@ class dcDumlu():
         table = PrettyTable(['Connection Details'])
         table.add_row([str(c)])
         print(table)
+
+    def sidToObjectName(self, c, sid):
+        c.search(search_base=self.searchBaseName, search_filter='(objectSID=%s)' % sid, attributes=['sAMAccountName', 'distinguishedName'])
+        try:
+            objectName =  c.entries[0]['sAMAccountName']
+            dn = c.entries[0]['distinguishedName']
+            return dn, objectName
+        except IndexError:
+            print('[-] SID not found: ', sid)
+            return False
 
     def resetObject(self, c, objDn):
         # for restoring userAccountControl value of object that has been modified
