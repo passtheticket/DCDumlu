@@ -34,6 +34,7 @@ unconstrainedComputer | Enumerate unconstrained computer account
 constrainedComputer | Enumerate constrained computer account
 constrainedUser | Enumerate constrained user account
 unconstrainedUser | Enumerate unconstrained user account
+getRbcd | Enumerate resource-based constrained delegation configuration
 addUser | Add a user
 addUserToGroup | Add a user to group
 delUser | Delete a user
