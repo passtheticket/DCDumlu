@@ -755,7 +755,7 @@ class dcDumlu():
                 table.add_row([service])
             print(table)
             print('[*] Trust this user/computer for delegation to specified services only.')
-            allowedToDelegateTo = input('[*] Specify service names that will be added: ')
+            allowedToDelegateTo = input('[*] Specify service names that will be added (comma separated): ')
             formattedAllowedToDelegateTo = allowedToDelegateTo.split(',')
             c.modify(constrainedDn, {'userAccountControl': [(MODIFY_REPLACE, [16777728])]})
             c.modify(constrainedDn, {'msDS-AllowedToDelegateTo': [(MODIFY_ADD, formattedAllowedToDelegateTo)]})
