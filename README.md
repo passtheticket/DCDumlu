@@ -18,6 +18,7 @@ Then provide `IP address of DC`, `Domain name`, `Username`, `Password or NT hash
 Commands | Descriptions
 ------------ | -------------
 getDomainInfo | Get domain SID, name and MAQ
+sidToObject | Convert SID to object name
 getPasswordPolicy | Get password policy
 getPasswordNotRequired | Get all users not required to have a password
 getTrustInfo | Get trust relationship information
