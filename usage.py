@@ -4,6 +4,7 @@ def Helper():
     helpTable = PrettyTable(["Commands", "Descriptions"])
     helpTable.align = "l"
     helpTable.add_row(["getDomainInfo", "Get domain SID, name and MAQ"])
+    helpTable.add_row(["sidToObject", "Convert SID to object name"])
     helpTable.add_row(["getPasswordPolicy", "Get password policy"])
     helpTable.add_row(["getPasswordNotRequired", "Get all users not required to have a password"])
     helpTable.add_row(["getTrustInfo", "Get trust relationship information"])
