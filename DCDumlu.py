@@ -48,7 +48,7 @@ class dcDumlu():
         elif self.operation == "sidToObject":
             sid = input('[*] SID of the object: ')
             if self.sidToObjectName(c, sid):
-                print('[+] User: %s' % self.sidToObjectName(c, sid)[1])
+                print('[+] sAMAccountName: %s' % self.sidToObjectName(c, sid)[1])
                 print('[+] Distinguised Name: %s' % self.sidToObjectName(c, sid)[0])
 
         elif self.operation == "getPasswordPolicy":
