@@ -44,7 +44,13 @@ class dcDumlu():
 
         if self.operation == "getDomainInfo":
             self.getDomainInfo(c)
-        
+
+        elif self.operation == "sidToObject":
+            sid = input('[*] SID of the object: ')
+            if self.sidToObjectName(c, sid):
+                print('[+] User: %s' % self.sidToObjectName(c, sid)[1])
+                print('[+] Distinguised Name: %s' % self.sidToObjectName(c, sid)[0])
+
         elif self.operation == "getPasswordPolicy":
             self.getPasswordPolicy(c)
             
@@ -873,7 +879,7 @@ class dcDumlu():
             objectName = c.entries[0]['sAMAccountName']
             dn = c.entries[0]['distinguishedName']
             return dn, objectName
-        except IndexError:
+        except:
             print('[-] SID not found: ', sid)
             return False
 
