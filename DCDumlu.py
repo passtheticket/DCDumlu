@@ -870,7 +870,7 @@ class dcDumlu():
     def sidToObjectName(self, c, sid):
         c.search(search_base=self.searchBaseName, search_filter='(objectSID=%s)' % sid, attributes=['sAMAccountName', 'distinguishedName'])
         try:
-            objectName =  c.entries[0]['sAMAccountName']
+            objectName = c.entries[0]['sAMAccountName']
             dn = c.entries[0]['distinguishedName']
             return dn, objectName
         except IndexError:
