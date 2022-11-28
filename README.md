@@ -1,5 +1,5 @@
 # DCDumlu
-DCDumlu aims to conduct enumeration and persistence on the Active Directory.
+DCDumlu aims to conduct enumeration and some persistence techniques on the Active Directory.
 
 ![GitHub Logo](images/dumlupinar.jpg)
 
