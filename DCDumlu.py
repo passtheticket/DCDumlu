@@ -335,7 +335,7 @@ class dcDumlu():
         # search user
         total_entries = 0
         entry_generator = c.extend.standard.paged_search(search_base=self.searchBaseName,
-                                                         search_filter='(&(objectCategory=person)(objectClass=user)(cn=*' + sUser + '*))',
+                                                         search_filter='(&(objectCategory=person)(objectClass=user)(|(cn=*' + sUser + '*)(sAMAccountName=*' + sUser + '*)))',
                                                          search_scope=SUBTREE,
                                                          attributes=['sAMAccountName', 'userAccountControl',
                                                                      'servicePrincipalName', 'logonCount', 'adminCount',
