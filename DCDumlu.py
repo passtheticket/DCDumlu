@@ -633,7 +633,7 @@ class dcDumlu():
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
-                table.add_row([entry['attributes']['sAMAccountName'], entry['attributes']['servicePrincipalName']])
+                table.add_row([entry['attributes']['cn'], entry['attributes']['sAMAccountName'], entry['attributes']['servicePrincipalName']])
                 total_entries += 1
         if total_entries > 0:
             print(table)
