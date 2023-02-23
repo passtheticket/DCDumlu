@@ -629,11 +629,11 @@ class dcDumlu():
 
         print("[*] Unconstrained Users of " + self.domainName + " domain: \n")
         print("[*] Querying ALL Users with trusted for delegation to any service (kerberos only)...")
-        table = PrettyTable(['Username', 'samAccountName', 'servicePrincipalName'])
+        table = PrettyTable(['samAccountName', 'servicePrincipalName'])
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
-                table.add_row([entry['attributes']['cn'], entry['attributes']['sAMAccountName'], entry['attributes']['servicePrincipalName']])
+                table.add_row([entry['attributes']['sAMAccountName'], entry['attributes']['servicePrincipalName']])
                 total_entries += 1
         if total_entries > 0:
             print(table)
