@@ -14,6 +14,7 @@ import convertsid
 import banner
 import uactable
 import usage
+import log
 
 
 class dcDumlu():
@@ -187,6 +188,7 @@ class dcDumlu():
         table.align = "l"
         table.add_row([c.entries[0]['dc'], c.entries[0]['distinguishedName'], c.entries[0]['objectSid'], c.entries[0]['ms-DS-MachineAccountQuota'], c.entries[0]['whenCreated']])
         print(table)
+        log.logOperation(self.operation, table)
 
     def getPasswordPolicy(self, c):
         c.search(search_base=self.searchBaseName, search_filter='(objectClass=domain)', attributes=ALL_ATTRIBUTES)
@@ -197,7 +199,8 @@ class dcDumlu():
         table.add_column(columnLayout[1], [c.entries[0]['minPwdAge'], c.entries[0]['maxPwdAge'], c.entries[0]['minPwdLength'], c.entries[0]['pwdHistoryLength'], c.entries[0]['lockoutThreshold'],
                        c.entries[0]['lockoutDuration'], c.entries[0]['lockOutObservationWindow']])
         table.align = "l"
-        print(table)        
+        print(table)
+        log.logOperation(self.operation, table)
 
     def getTrustInfo(self, c):
         total_entries = 0
@@ -228,6 +231,7 @@ class dcDumlu():
         if total_entries > 0:
                 print(table)
                 print('[+] Count of trust: ', total_entries)
+                log.logOperation(self.operation, table)
         else:
             print('[-] Trust relationship is not defined!')        
             
@@ -254,6 +258,7 @@ class dcDumlu():
         if total_entries > 0:
             print(table)
             print('[+] Count of computers: ', total_entries)
+            log.logOperation(self.operation, table)
         else:
             print('[-] Not found!')
             
@@ -280,6 +285,7 @@ class dcDumlu():
         if total_entries > 0:
             print(table)
             print('[+] Count of DCs: ', total_entries)
+            log.logOperation(self.operation, table)
         else:
             print('[-] Something went wrong!')            
 
@@ -306,6 +312,7 @@ class dcDumlu():
         if total_entries > 0:
             print(table)
             print('[+] Count of users: ', total_entries)
+            log.logOperation(self.operation, table)
         else:
             print('[-] Not found!')
 
@@ -328,6 +335,7 @@ class dcDumlu():
         if total_entries > 0:
             print(table)
             print('[+] Count of groups: ', total_entries)
+            log.logOperation(self.operation, table)
         else:
             print('[-] Not found!')
 
@@ -368,6 +376,7 @@ class dcDumlu():
         if total_entries > 0:
             print(table)
             print('[+] Count of searched domain users: ', total_entries)
+            log.logOperation(self.operation, table)
         else:
             print('[-] Not found!')
 
@@ -399,6 +408,7 @@ class dcDumlu():
         if total_entries > 0:
             print(table)
             print('[+] Count of searched computers: ', total_entries)
+            log.logOperation(self.operation, table)
         else:
             print('[-] Not found!')
 
@@ -444,6 +454,7 @@ class dcDumlu():
         if total_entries > 0:
             print(table)
             print('[+] Count of searched groups: ', total_entries)
+            log.logOperation(self.operation, table)
         else:
             print('[-] Not found!')
 
@@ -467,6 +478,7 @@ class dcDumlu():
         if total_entries > 0:
             print(table)
             print('[+] Count of domain users: ', total_entries)
+            log.logOperation(self.operation, table)
         else:
             print('[-] Not found!')
 
@@ -491,6 +503,7 @@ class dcDumlu():
         if total_entries > 0:
             print(table)
             print('[+] Count of computers: ', total_entries)
+            log.logOperation(self.operation, table)
         else:
             print('[-] Not found!')
 
@@ -524,6 +537,7 @@ class dcDumlu():
         if total_entries > 0:
             print(table)
             print('[+] Count of searched domain users: ', total_entries)
+            log.logOperation(self.operation, table)
         else:
             print('[-] Not found')
             
@@ -551,6 +565,7 @@ class dcDumlu():
         if total_entries > 0:
             print(table)
             print('[+] Count of computers: ', total_entries)
+            log.logOperation(self.operation, table)
         else:
             print('[-] Not found!')
 
@@ -583,6 +598,7 @@ class dcDumlu():
         if total_entries > 0:
             print(table)
             print('[+] Count of computers: ', total_entries)
+            log.logOperation(self.operation, table)
         else:
             print('[-] Not found!')
 
@@ -614,6 +630,7 @@ class dcDumlu():
         if total_entries > 0:
             print(table)
             print('[+] Count of domain users: ', total_entries)
+            log.logOperation(self.operation, table)
         else:
             print('[-] Not found!')
 
@@ -638,6 +655,7 @@ class dcDumlu():
         if total_entries > 0:
             print(table)
             print('[+] Count of domain users: ', total_entries)
+            log.logOperation(self.operation, table)
         else:
             print('[-] Not found!')
 
@@ -669,6 +687,7 @@ class dcDumlu():
         if total_entries > 0:
             print(table)
             print('[+] Count of accounts: ', total_entries)
+            log.logOperation(self.operation, table)
         else:
             print('[-] Not found!')
 
@@ -738,6 +757,7 @@ class dcDumlu():
         if total_entries > 0:
             print(table)
             print('[+] Count of SPNs: ', total_entries)
+            log.logOperation(self.operation, table)
         else:
             print('[-] Not found Kerberoastable user!')
 
@@ -843,6 +863,7 @@ class dcDumlu():
         if total_entries > 0:
             print(table)
             print('[+] Count of searched domain users: ', total_entries)
+            log.logOperation(self.operation, table)
         else:
             print('[-] Not found ASREProastable user!')
             
@@ -876,6 +897,7 @@ class dcDumlu():
         table = PrettyTable(['Connection Details'])
         table.add_row([str(c)])
         print(table)
+        log.logOperation(self.operation, table)
 
     def sidToObjectName(self, c, sid):
         c.search(search_base=self.searchBaseName, search_filter='(objectSID=%s)' % sid, attributes=['sAMAccountName', 'distinguishedName'])
@@ -909,6 +931,7 @@ class dcDumlu():
         if total_entries > 0:
             print(table)
             print('[+] Count of searched objects: ', total_entries)
+            log.logOperation(self.operation, table)
         else:
             print('[-] Not found!')
 
@@ -919,6 +942,7 @@ class dcDumlu():
             table.align = "l"
             table.add_row([str(oldUserAccountControl)])
             print(table)
+            log.logOperation(self.operation, table)
 
             response = input('[*] Would you like to change value of userAccountControl?(y/n) ')
             if response == 'y':
@@ -929,6 +953,7 @@ class dcDumlu():
                     table.align = "l"
                     table.add_row([dName, newUserAccountControl])
                     print(table)
+                    log.logOperation(self.operation, table)
                 else:
                     print('[-] Something went wrong!')
                     print('[!] ' + str(c.result))
