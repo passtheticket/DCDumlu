@@ -700,10 +700,11 @@ class dcDumlu():
             print('[+] ' + sAMAccountName + ' is added!')
             print('[+] Distinguished Name: ' + addUserDn)
             print('[!] User must change password at next logon.')
+            log.logOperation(self.operation, addUserDn)
         else:
             print('[!] Are you sure that you have adding user permission?')
             print('[!] If yes, please provide Distinguished Name additionaly')
-            print('[*] Example: cn=unsafe inline,cn=Users,' + self.searchBaseName)
+            print('[*] Example: cn=username,cn=Users,' + self.searchBaseName)
             addUserDn = input('[*] Distinguished Name: ')
             givenName = input('[*] First Name: ')
             sn = input('[*] Last Name: ')
@@ -715,9 +716,11 @@ class dcDumlu():
                 print('[+] ' + sAMAccountName + ' is added!')
                 print('[+] Distinguished Name: ' + addUserDn)
                 print('[!] User must change password at next logon.')
+                log.logOperation(self.operation, addUserDn)
             else:
                 print('[-] ' + sAMAccountName + ' is not added!')
                 print('[!] ' + c.result['message'])
+                log.logOperation(self.operation, c.result['message'])
 
     def addUserToGroup(self, c, user_dn, group_dn):
         result = addUserToGroups(c, user_dn, group_dn)
