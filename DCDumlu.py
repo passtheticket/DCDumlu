@@ -846,7 +846,9 @@ class dcDumlu():
             if c.result['description'] == 'noSuchObject':
                 print('[-] No such object like: ' + constrainedDn)
             elif c.result['description'] == 'success':
-                print('[+] Constrained delegation is added for ' + constrainedDn)
+                message = f'[+] Constrained delegation is added for  {constrainedDn}'
+                print(message)
+                log.logOperation(self.operation, message)
             elif c.result['description'] == 'insufficientAccessRights':
                 print('[-] Access is denied!')
             elif c.result['description'] == 'attributeOrValueExists':
@@ -854,6 +856,7 @@ class dcDumlu():
             else:
                 print('[-] Something went wrong!')
                 print('[!] ' + c.result['message'])
+                log.logOperation(self.operation, c.result['message'])
 
         else:
             print('[-] The Computer/User account was not found or the specified user has not a SPN!')
