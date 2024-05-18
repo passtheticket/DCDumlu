@@ -846,7 +846,7 @@ class dcDumlu():
             if c.result['description'] == 'noSuchObject':
                 print('[-] No such object like: ' + constrainedDn)
             elif c.result['description'] == 'success':
-                message = f'[+] Constrained delegation is added for  {constrainedDn}'
+                message = f'[+] Constrained delegation is added for {constrainedDn}'
                 print(message)
                 log.logOperation(self.operation, message)
             elif c.result['description'] == 'insufficientAccessRights':
@@ -893,26 +893,31 @@ class dcDumlu():
         # userAccountControl 512 NORMAL_ACCOUNT
         c.modify(asRepDn, {'userAccountControl': [(MODIFY_REPLACE, [4194816])]})
         if c.result['description'] == 'success':
-            print('[+] Do not require Kerberos preauthentication for ' + asRepDn)
+            message = f'[+] Kerberos preauthentication is not required for {asRepDn}'
+            print(message)
+            log.logOperation(self.operation, message)
             print('[+] AS-REP Roasting attack must be possible.')
         elif c.result['description'] == 'insufficientAccessRights':
             print('[-] Access is denied!')
         else:
             print('[-] Something went wrong!')
             print('[!] ' + str(c.result))
+            log.logOperation(self.operation, str(c.result))
 
     def delAsRep(self, c, asRepDn):
         # userAccountControl 4194304 DONT_REQ_PREAUTH
         # userAccountControl 512 NORMAL_ACCOUNT
         c.modify(asRepDn, {'userAccountControl': [(MODIFY_REPLACE, [512])]})
         if c.result['description'] == 'success':
-            print('[+] Kerberos preauthentication is required for ' + asRepDn)
-            print('[+] AS-REP Roasting attack must not be possible.')
+            message = f'[+] Kerberos preauthentication is required for {asRepDn}'
+            print(message)
+            log.logOperation(self.operation, message)
         elif c.result['description'] == 'insufficientAccessRights':
             print('[-] Access is denied!')
         else:
             print('[-] Something went wrong!')
             print('[!] ' + str(c.result))
+            log.logOperation(self.operation, str(c.result))
 
     def checkConnection(self, c):
         table = PrettyTable(['Connection Details'])
