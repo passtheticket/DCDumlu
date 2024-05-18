@@ -725,10 +725,13 @@ class dcDumlu():
     def addUserToGroup(self, c, user_dn, group_dn):
         result = addUserToGroups(c, user_dn, group_dn)
         if result is True:
-            print('[+] ' + user_dn + ' was added to ' + group_dn)
+            message = f'[+] {user_dn} was added to {group_dn}'
+            print(message)
+            log.logOperation(self.operation, message)
         else:
             print('[-] User was not added to ' + group_dn)
             print('[!] ' + c.result['message'])
+            log.logOperation(self.operation, c.result['message'])
 
     def delUser(self, c, userDn):
         c.delete(userDn)
