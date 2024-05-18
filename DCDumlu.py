@@ -802,12 +802,15 @@ class dcDumlu():
             print('[-] No such attribute. The SPN is wrong!')
             print('[!] ' + c.result['message'])
         elif c.result['result'] == 0:
-            print('[+] ' + spnName + ' is deleted.')
+            message = f'[+] {spnName} is deleted.'
+            print(message)
+            log.logOperation(self.operation, message)
         elif c.result['description'] == 'insufficientAccessRights':
             print('[-] Access is denied!')
         else:
             print('[-] Something went wrong!')
             print('[!] ' + c.result['message'])
+            log.logOperation(self.operation, c.result['message'])
 
     def addUnconstrained(self, c, unconstrainedDn):
         # userAccountControl 524288 TRUSTED_FOR_DELEGATION
