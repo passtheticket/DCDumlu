@@ -781,12 +781,15 @@ class dcDumlu():
             print('[-] SPN is duplicated.')
             print('[!] ' + c.result['message'])
         elif c.result['result'] == 0:
-            print('[+] ' + spnName + ' is added.')
+            message = f'[+] {spnName} is added.'
+            print(message)
+            log.logOperation(self.operation, message)
         elif c.result['description'] == 'insufficientAccessRights':
             print('[-] Access is denied!')
         else:
             print('[-] Something went wrong!')
             print('[!] ' + c.result['message'])
+            log.logOperation(self.operation, c.result['message'])
 
     def unSetSpn(self, c, setSpnDn, spnName):
         c.modify(setSpnDn, {'servicePrincipalName': [(MODIFY_DELETE, [spnName])]})
