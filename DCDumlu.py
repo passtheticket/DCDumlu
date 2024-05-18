@@ -736,7 +736,9 @@ class dcDumlu():
     def delUser(self, c, userDn):
         c.delete(userDn)
         if c.result['description'] == 'success':
-            print('[+] ' + userDn + ' is deleted.')
+            message = f'[+] {userDn} is deleted.'
+            print(message)
+            log.logOperation(self.operation, message)
         elif c.result['description'] == 'noSuchObject':
             print('[-] No such object! ' + userDn)
         elif c.result['description'] == 'insufficientAccessRights':
@@ -744,6 +746,7 @@ class dcDumlu():
         else:
             print('[-] ' + userDn + ' is not deleted!')
             print('[!] ' + c.result['message'])
+            log.logOperation(self.operation, c.result['message'])
 
     def getSpns(self, c):
         # Getting all user SPNs for the kerberoasting attack. The krbtgt account is excluded.
