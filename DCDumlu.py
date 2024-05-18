@@ -353,7 +353,7 @@ class dcDumlu():
         table = PrettyTable(
             ['samAccountName', 'userAccountControl', 'servicePrincipalName', 'Logon Count', 'Admin Count',
              'Distinguished Name', 'Member Of', 'RID', 'Last Logon Time'])
-        table._max_width = {"servicePrincipalName": 30, "Distinguished Name": 45, "Member Of": 45}
+        table._max_width = {"servicePrincipalName": 30, "Distinguished Name": 70, "Member Of": 45}
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
@@ -395,7 +395,7 @@ class dcDumlu():
         print("[*] Computers of " + self.domainName + " domain: \n")
         table = PrettyTable(
             ['Computer Name', 'Distinguished Name', 'Operating System', 'Version', 'userAccountControl', 'servicePrincipalName', 'Logon Count', 'RID', 'Last Logon Time'])
-        table._max_width = {"servicePrincipalName": 40, "Distinguished Name": 40, "Operating System": 25}
+        table._max_width = {"servicePrincipalName": 40, "Distinguished Name": 70, "Operating System": 25}
         table.align = "l"
         for entry in entry_generator:
             if 'dn' in entry:
