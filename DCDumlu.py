@@ -816,12 +816,15 @@ class dcDumlu():
         # userAccountControl 524288 TRUSTED_FOR_DELEGATION
         c.modify(unconstrainedDn, {'userAccountControl': [(MODIFY_REPLACE, [524288])]})
         if c.result['description'] == 'success':
-            print('[+] Trust this ' + unconstrainedDn + ' for delegation to any service(Kerberos only)')
+            message = f'[+] Trust this {unconstrainedDn} for delegation to any service(Kerberos only)'
+            print(message)
+            log.logOperation(self.operation, message)
         elif c.result['description'] == 'insufficientAccessRights':
             print('[-] Access is denied!')
         else:
             print('[-] Something went wrong!')
             print('[!] ' + c.result['message'])
+            log.logOperation(self.operation, c.result['message'])
 
     def addConstrained(self, c, constrainedDn, constrainedName):
         # userAccountControl 512 NORMAL_ACCOUNT
